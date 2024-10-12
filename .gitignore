@@ -1,0 +1,7 @@
+.vscode/
+.venv/
+dynamodb_data/
+notes.md
+__pycache__/
+*.pyc
+
