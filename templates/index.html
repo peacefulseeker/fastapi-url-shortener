@@ -8,7 +8,7 @@
     <title>URL Shortener</title>
 </head>
 <body>
-    <form hx-post="/api/v1/shorten/" hx-target="#result" hx-target-error="#error-toast" hx-swap="innerHTML">
+    <form hx-post="/api/v1/shorten" hx-target="#result" hx-target-error="#error-toast" hx-swap="innerHTML">
         <input type="text" name="full_url" required placeholder="Paste full URL">
         <input type="text" name="short_path" required placeholder="Preferred short URL">
         <button>Get short URL</button>

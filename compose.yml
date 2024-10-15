@@ -1,4 +1,17 @@
 services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+    ports:
+      - 8080:8080
+    environment:
+      DDB_ENDPOINT_URL: http://ddb:8000
+    depends_on:
+      - ddb
+
   ddb:
     image: amazon/dynamodb-local
     ports:
@@ -7,15 +20,11 @@ services:
       - ./dynamodb_data:/home/dynamodblocal/data
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
 
-
   ddb-admin:
     image: aaronshaf/dynamodb-admin
     ports:
       - "8001:8001"
     environment:
       DYNAMO_ENDPOINT: "http://ddb:8000" # service_name:container_port
-      # AWS_REGION: dummy
-      # AWS_ACCESS_KEY_ID: abc
-      # AWS_SECRET_ACCESS_KEY: def
     depends_on:
       - ddb

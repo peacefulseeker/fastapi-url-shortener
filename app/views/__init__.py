@@ -1,12 +1,10 @@
 from fastapi import Request
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
 from starlette.templating import _TemplateResponse
 import starlette.status as status
 
 from app.db import get_db_table
-
-templates = Jinja2Templates(directory="templates")
+from app.config import templates
 
 
 async def home(request: Request) -> _TemplateResponse:
@@ -17,7 +15,7 @@ async def home(request: Request) -> _TemplateResponse:
     )
 
 
-async def catch_all(path: str, request: Request) -> RedirectResponse:
+async def catch_all_redirect(path: str, request: Request) -> RedirectResponse:
     table = get_db_table()
     response = table.get_item(Key={"ShortPath": path})
 

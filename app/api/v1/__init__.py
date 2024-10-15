@@ -1,9 +1,11 @@
-from datetime import datetime
-from typing import Annotated
+import botocore
 import botocore.exceptions
+from datetime import datetime
+from typing import TYPE_CHECKING, Annotated
 from fastapi import  APIRouter, Form, status, HTTPException
 from pydantic import BaseModel
-import botocore
+if TYPE_CHECKING:
+    from mypy_boto3_dynamodb.type_defs import ScanOutputTableTypeDef
 
 from app.db import get_db_table
 
@@ -14,8 +16,8 @@ class ShortenUrlForm(BaseModel):
 
 router = APIRouter(prefix="/api/v1")
 
-@router.post("/shorten/", status_code=status.HTTP_201_CREATED)
-async def shorten(data: Annotated[ShortenUrlForm, Form()]) -> dict:
+@router.post("/shorten", status_code=status.HTTP_201_CREATED)
+async def shorten_url(data: Annotated[ShortenUrlForm, Form()]) -> dict:
     table = get_db_table()
 
     try:
@@ -39,4 +41,14 @@ async def shorten(data: Annotated[ShortenUrlForm, Form()]) -> dict:
     return {
         "long_url": data.full_url,
         "short_path": data.short_path
+    }
+
+@router.get('/list')
+async def list_urls() -> dict:
+    table = get_db_table()
+    response: "ScanOutputTableTypeDef"= table.scan()
+
+    return {
+        "count": response['Count'],
+        "items": response['Items']
     }
