@@ -27,8 +27,7 @@ FROM python:${PYTHON_VERSION} as backend-build
 FROM backend-build as app
     WORKDIR /app
 
-    # TODO: copy only the files that are needed for launching app in prod
-    COPY . /app/
+    COPY ./app ./app
 
     RUN chown -R appuser .
     USER appuser

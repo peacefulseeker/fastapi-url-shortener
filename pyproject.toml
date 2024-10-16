@@ -1,27 +1,52 @@
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
+
 [tool.poetry]
-name = "fastapi-url-shortener"
-version = "0.1.0"
-description = "URL Shortener"
 authors = ["Alexey Vorobyov <alexey.vorobyov.s@gmail.com>"]
-readme = "README.md"
+description = "URL Shortener"
+name = "fastapi-url-shortener"
 package-mode = false
+readme = "README.md"
+version = "0.1.0"
 
 [tool.poetry.dependencies]
-python = "~3.11"
-fastapi = {extras = ["standard"], version = "^0.115.0"}
-toml-sort = "^0.23.1"
-python-multipart = "^0.0.12"
-jinja2 = "^3.1.4"
 boto3 = {extras = ["dynamodb"], version = "^1.35.38"}
+fastapi = {extras = ["standard"], version = "^0.115.0"}
+jinja2 = "^3.1.4"
 pydantic-settings = "^2.5.2"
-python-dotenv = "^1.0.1"
-
+python = "~3.11"
+python-multipart = "^0.0.12"
+toml-sort = "^0.23.1"
 
 [tool.poetry.group.dev.dependencies]
-toml-sort = "^0.23.1"
 bpython = "^0.24"
 mypy-boto3-dynamodb = "^1.35.24"
+pytest = "^8.3.3"
+pytest-env = "^1.1.5"
+ruff = "^0.6.9"
+toml-sort = "^0.23.1"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.ruff]
+line-length = 160
+target-version = "py311"
+
+[tool.ruff.lint]
+extend-select = [
+    "TID252",  # Prefer absolute imports over relative imports from parent modules
+]
+ignore = []
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+known-local-folder = ["app"]
+
+[tool.tomlsort]
+all = true
+in_place = true
+sort_first = ["tool.poetry"]
+spaces_before_inline_comment = 2
+spaces_indent_inline_array = 4
+trailing_comma_inline_array = true

@@ -1,20 +1,19 @@
-import boto3
 from typing import TYPE_CHECKING
 
+import boto3
+
 if TYPE_CHECKING:
-    from mypy_boto3_dynamodb.service_resource import Table
-    from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
+    from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
 
-from app import config
+from app.config import settings
 
 
-def get_db_table(table='Urls') -> "Table":
+def get_db_table(table="Urls") -> "Table":
     resource: "DynamoDBServiceResource" = boto3.resource(
-        'dynamodb',
-        endpoint_url=config.DDB_ENDPOINT_URL,
-        aws_access_key_id=config.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY,
-        region_name=config.AWS_REGION_NAME,
+        "dynamodb",
+        endpoint_url=settings.ddb_endpoint_url,
+        aws_access_key_id=settings.aws_access_key_id,
+        aws_secret_access_key=settings.aws_secret_access_key,
+        region_name=settings.aws_region_name,
     )
     return resource.Table(table)
-
