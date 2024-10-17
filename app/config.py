@@ -14,6 +14,7 @@ class SettingsMixin:
 
 
 class DatabaseSettings(BaseSettings):
+    ddb_table_name: str = Field(default="Urls")
     ddb_endpoint_url: str = Field(default="http://localhost:7654")
     aws_access_key_id: str = Field(default="local")
     aws_secret_access_key: str = Field(default="local")
