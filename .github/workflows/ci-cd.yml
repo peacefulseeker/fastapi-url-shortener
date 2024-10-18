@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/build
-    - name: Run lint
+    - name: lint
       run: make lint
 
   test:
@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/build
-    - name: Run tests
+    - name: test
       run: make test
 
   deploy:
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Deploy to Fly
+    - name: deploy
       uses: superfly/flyctl-actions/setup-flyctl@master
     - run: flyctl deploy
       env:
