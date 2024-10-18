@@ -1,0 +1,37 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/build
+    - name: Run lint
+      run: make lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/build
+    - name: Run tests
+      run: make test
+
+  deploy:
+    needs: [build, lint, test]
+    if: github.ref == 'refs/heads/main' && github.repository_owner == 'peacefulseeker'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Deploy to Fly
+      uses: superfly/flyctl-actions/setup-flyctl@master
+    - run: flyctl deploy
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

@@ -46,8 +46,14 @@ async def shorten_url(data: Annotated[ShortenUrlForm, Form()]) -> dict:
 async def list_urls() -> dict:
     table = get_db_table()
     response: "ScanOutputTableTypeDef" = table.scan()
+    count = response["Count"]
+
+    while "LastEvaluatedKey" in response:
+        response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
+        response["Items"].extend(response["Items"])
+        count += response["Count"]
 
     return {
-        "count": response["Count"],
+        "count": count,
         "items": response["Items"],
     }

@@ -14,6 +14,5 @@ fmt:
 	poetry run ruff check --select I --fix  # sort imports
 	poetry run toml-sort pyproject.toml
 
-
 test:
 	poetry run pytest
