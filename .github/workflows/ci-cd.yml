@@ -1,0 +1,42 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/build
+    - name: lint
+      run: make lint
+
+  test:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/build
+    - name: Setup DynamoDB Local
+      uses: rrainn/dynamodb-action@v4.0.0
+      with:
+        port: 7654
+    - name: test
+      run: make test
+
+  deploy:
+    needs: [lint, test]
+    if: github.ref == 'refs/heads/main' && github.repository_owner == 'peacefulseeker'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: deploy
+      uses: superfly/flyctl-actions/setup-flyctl@master
+    - run: flyctl deploy
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
