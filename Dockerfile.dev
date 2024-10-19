@@ -16,5 +16,3 @@ COPY pyproject.toml poetry.lock .
 WORKDIR /app
 
 RUN poetry install --with dev
-
-CMD ["fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8080"]
