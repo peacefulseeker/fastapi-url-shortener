@@ -8,7 +8,13 @@ from app.db import get_db_table
 
 
 async def home(request: Request) -> _TemplateResponse:
-    return templates.TemplateResponse(request=request, name="index.html", context={})
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "origin": request.base_url,
+        },
+    )
 
 
 async def catch_all_redirect(path: str, request: Request) -> RedirectResponse:

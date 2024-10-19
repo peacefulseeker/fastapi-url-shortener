@@ -1,0 +1,44 @@
+<script>
+    async function processResponse(evt) {
+        const status = evt.detail.xhr.status;
+        console.log(evt);
+        let responseMessage;
+        try {
+            responseMessage = JSON.parse(evt.detail.serverResponse)["detail"];
+        } catch {
+            responseMessage = evt.detail.serverResponse;
+        }
+        const toast = document.getElementById('toast');
+        const toastAlert = document.getElementById('toast-alert');
+        const toastMessage = document.getElementById('toast-message');
+
+        // remove previous alerts when present
+        toastAlert.className = toastAlert.className.replace(/alert-.*/, '');
+
+        if (status >= 200 && status < 300) {
+            toastAlert.classList.add('alert-success');
+            if (status == 201) {
+                const shortenedUrl = responseMessage["shortened_url"];
+                try {
+                    await navigator.clipboard.writeText(shortenedUrl);
+                    responseMessage = `Short URL ${shortenedUrl} created and copied to clipboard!`;
+                } catch {
+                    responseMessage = `Short URL ${shortenedUrl} created succesfully!`;
+                }
+            }
+        } else if (status >= 400 && status < 500) {
+            toastAlert.classList.add('alert-warning');
+        } else if (status >= 500) {
+            toastAlert.classList.add('alert-error');
+            responseMessage = "Something went wrong, please try again later.";
+        }
+        toastMessage.innerHTML = responseMessage;
+
+        toast.classList.add('opacity-100');
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+        }, 3000);
+    }
+
+    document.body.addEventListener('htmx:beforeSwap', processResponse);
+</script>

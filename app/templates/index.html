@@ -2,18 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="htmx-config" content='{"responseHandling": [{"code":".*", "swap": true}]}' />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.13/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>URL Shortener</title>
 </head>
 <body>
-    <form hx-post="/api/v1/shorten" hx-target="#result" hx-target-error="#error-toast" hx-swap="innerHTML">
-        <input type="text" name="full_url" required placeholder="Paste full URL">
-        <input type="text" name="short_path" required placeholder="Preferred short URL">
-        <button>Shorten URL</button>
-    </form>
-    <div id="result"></div>
-    <div id="error-toast"></div>
+    <main>
+        <div class="container mx-auto px-6">
+            {% include "toast.html" %}
+            {% include "form.html" %}
+            {% include "beforeswap.script.html" %}
+        </div>
+    </main>
 </body>
 </html>
