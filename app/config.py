@@ -33,6 +33,8 @@ class CorsSettings(SettingsMixin, BaseSettings):
 class Settings(DatabaseSettings, CorsSettings):
     model_config = SettingsConfigDict(env_file="app/.env", env_file_encoding="utf-8")
 
+    debug: bool = Field(default=False)
+
     @classmethod
     @lru_cache
     def load(cls) -> "Settings":

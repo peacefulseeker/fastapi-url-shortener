@@ -7,11 +7,11 @@ from app.main import app
 
 
 @pytest.fixture(scope="session")
-def client():
+def client() -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def ddb():
     ddb = TestDDB()
     ddb.create()

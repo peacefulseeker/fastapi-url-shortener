@@ -3,13 +3,19 @@ from typing import TYPE_CHECKING, Annotated
 
 import botocore
 import botocore.exceptions
-from fastapi import APIRouter, Form, HTTPException, status
+from fastapi import APIRouter, Form, HTTPException, Request, status
 from pydantic import BaseModel
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb.type_defs import ScanOutputTableTypeDef
 
+from app.config import settings
 from app.db import get_db_table
+
+router = APIRouter(prefix="/api/v1")
+limiter = Limiter(key_func=get_remote_address)
 
 
 class ShortenUrlForm(BaseModel):
@@ -17,11 +23,9 @@ class ShortenUrlForm(BaseModel):
     full_url: str = Form()
 
 
-router = APIRouter(prefix="/api/v1")
-
-
 @router.post("/shorten", status_code=status.HTTP_201_CREATED)
-async def shorten_url(data: Annotated[ShortenUrlForm, Form()]) -> dict:
+@limiter.limit("5/minute", error_message="Hold on, too many requests.", exempt_when=lambda: settings.debug)
+async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()]) -> dict:
     table = get_db_table()
 
     try:
