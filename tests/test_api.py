@@ -36,7 +36,7 @@ class TestListUrls(TestMixin):
         result = client.get("/api/v1/list")
 
         assert result.status_code == status.HTTP_200_OK
-        assert result.json() == {"count": 0, "items": []}
+        assert result.json()["detail"] == {"count": 0, "items": []}
 
     def test_list_created_urls(self, client):
         self._shorten_url(
@@ -54,19 +54,18 @@ class TestListUrls(TestMixin):
 
         result = client.get(self.url)
         assert result.status_code == status.HTTP_200_OK
-        assert result.json()["count"] == 2
+        assert result.json()["detail"]["count"] == 2
 
 
 @pytest.mark.usefixtures("ddb")
 class TestShortenUrl(TestMixin):
     def test_success(self):
+        self.payload["short_path"] = "google"
+
         result = self._shorten_url()
 
         assert result.status_code == status.HTTP_201_CREATED
-        assert result.json() == {
-            "long_url": self.payload["full_url"],
-            "short_path": self.payload["short_path"],
-        }
+        assert result.json()["detail"] == {"shortened_url": "http://testserver/google"}  # pytest defined
 
     def test_duplicate_paths_disallowed(self):
         self._shorten_url()

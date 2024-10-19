@@ -42,7 +42,11 @@ async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()])
 
         raise exc
 
-    return {"long_url": data.full_url, "short_path": data.short_path}
+    return {
+        "detail": {
+            "shortened_url": str(request.base_url.replace(path=data.short_path)),
+        }
+    }
 
 
 # TODO: should not be public, either remove or add basic auth to view
@@ -58,6 +62,8 @@ async def list_urls() -> dict:
         count += response["Count"]
 
     return {
-        "count": count,
-        "items": response["Items"],
+        "detail": {
+            "count": count,
+            "items": response["Items"],
+        }
     }
