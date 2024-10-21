@@ -1,7 +1,6 @@
 <script>
-    async function processResponse(evt) {
+    async function toastifyResponse(evt) {
         const status = evt.detail.xhr.status;
-        console.log(evt);
         let responseMessage;
         try {
             responseMessage = JSON.parse(evt.detail.serverResponse)["detail"];
@@ -17,7 +16,7 @@
 
         if (status >= 200 && status < 300) {
             toastAlert.classList.add('alert-success');
-            if (status == 201) {
+            if (status === 201) {
                 const shortenedUrl = responseMessage["shortened_url"];
                 try {
                     await navigator.clipboard.writeText(shortenedUrl);
@@ -40,5 +39,5 @@
         }, 3000);
     }
 
-    document.body.addEventListener('htmx:beforeSwap', processResponse);
+    htmx.on('htmx:beforeSwap', toastifyResponse);
 </script>
