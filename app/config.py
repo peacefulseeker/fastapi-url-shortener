@@ -34,6 +34,7 @@ class Settings(DatabaseSettings, CorsSettings):
     model_config = SettingsConfigDict(env_file="app/.env", env_file_encoding="utf-8")
 
     debug: bool = Field(default=False)
+    frontend_assets_url: str = Field(default="http://localhost:5555/src/main.ts")
 
     @classmethod
     @lru_cache

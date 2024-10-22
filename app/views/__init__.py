@@ -3,7 +3,7 @@ from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.templating import _TemplateResponse
 
-from app.config import templates
+from app.config import templates, settings
 from app.db import get_db_table
 
 
@@ -13,6 +13,7 @@ async def home(request: Request) -> _TemplateResponse:
         name="index.html",
         context={
             "origin": request.base_url,
+            "frontend_assets_url": settings.frontend_assets_url,
         },
     )
 
