@@ -9,7 +9,7 @@ from app.views import catch_all_redirect, home
 app = FastAPI(docs_url="/api/v1/docs", redoc_url=None)
 
 if settings.debug:
-    app.mount("/static", StaticFiles(directory="app/static"), name="static")
+    app.mount("/static", StaticFiles(directory="app/static", check_dir=False), name="static")
 
 app.add_middleware(
     CORSMiddleware,
