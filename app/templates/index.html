@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.13/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>URL Shortener</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" crossorigin src="{{ frontend_assets_url }}/index.js"></script>
+  <link rel="stylesheet" crossorigin href="{{ frontend_assets_url }}/index.css">
+  <title>URL Shortener</title>
 </head>
 <body>
-    <main>
-        <div class="container mx-auto px-6">
-            {% include "toast.html" %}
-            {% include "form.html" %}
-            {% include "beforeswap.script.html" %}
-        </div>
-    </main>
+  <main>
+    <div class="container mx-auto px-6">
+      <c-toast></c-toast>
+      <c-form origin="{{ origin }}" url="/api/v1/shorten"></c-form>
+    </div>
+  </main>
 </body>
 </html>

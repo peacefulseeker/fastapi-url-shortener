@@ -35,6 +35,9 @@ class Settings(DatabaseSettings, CorsSettings):
 
     debug: bool = Field(default=False)
 
+    aws_cloudfront_domain: str = Field(default="")
+    frontend_assets_version: str = Field(default="")
+
     @classmethod
     @lru_cache
     def load(cls) -> "Settings":

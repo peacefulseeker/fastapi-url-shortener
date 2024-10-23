@@ -3,8 +3,14 @@ from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.templating import _TemplateResponse
 
-from app.config import templates
+from app.config import settings, templates
 from app.db import get_db_table
+
+
+def get_frontend_assets_url() -> str:
+    if settings.frontend_assets_version:
+        return f"https://{settings.aws_cloudfront_domain}/fus/v/{settings.frontend_assets_version}"
+    return "/static/frontend"
 
 
 async def home(request: Request) -> _TemplateResponse:
@@ -13,6 +19,7 @@ async def home(request: Request) -> _TemplateResponse:
         name="index.html",
         context={
             "origin": request.base_url,
+            "frontend_assets_url": get_frontend_assets_url(),
         },
     )
 
