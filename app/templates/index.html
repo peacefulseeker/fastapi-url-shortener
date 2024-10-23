@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module" crossorigin src="{{ frontend_assets_url }}/index.js"></script>
+  <link rel="stylesheet" crossorigin href="{{ frontend_assets_url }}/index.css">
   <title>URL Shortener</title>
 </head>
 <body>
@@ -12,6 +14,5 @@
       <c-form origin="{{ origin }}" url="/api/v1/shorten"></c-form>
     </div>
   </main>
-  <script type="module" src="{{ frontend_assets_url }}"></script>
 </body>
 </html>

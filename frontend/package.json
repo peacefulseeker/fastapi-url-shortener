@@ -2,7 +2,7 @@
   "name": "url-shortener",
   "version": "1.0.0",
   "scripts": {
-    "dev": "BACKEND_PORT=8000 vite",
+    "dev": "BACKEND_PORT=8000 PORT=5555 vite",
     "build": "tsc && vite build",
     "check:lint": "eslint",
     "check:type": "tsc",
