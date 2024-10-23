@@ -12,3 +12,5 @@
 # created by virtualenv automatically
 .venv/**/*
 fly.toml
+
+frontend/
