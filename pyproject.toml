@@ -39,6 +39,7 @@ addopts = [
 ]
 env = [
     "DEBUG = True",
+    "AWS_REGION_NAME = eu-central-1",
 ]
 
 [tool.ruff]

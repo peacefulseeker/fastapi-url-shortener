@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 from tests.db import TestDDB
 
+from app.config import settings
 from app.main import app
 
 
@@ -21,7 +22,7 @@ def client() -> TestClient:
 @pytest.fixture
 def ddb_resource() -> Generator["DynamoDBServiceResource", None, None]:
     with mock_aws():
-        conn = boto3.resource("dynamodb")
+        conn = boto3.resource("dynamodb", region_name=settings.aws_region_name)
         yield conn
 
 
