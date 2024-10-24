@@ -22,10 +22,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/build
-    - name: Setup DynamoDB Local
-      uses: rrainn/dynamodb-action@v4.0.0
-      with:
-        port: 7654
     - name: test
       run: make test
 
