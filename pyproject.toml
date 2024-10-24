@@ -38,8 +38,8 @@ addopts = [
     "-p no:warnings",
 ]
 env = [
-    "DEBUG = True",
     "AWS_REGION_NAME = eu-central-1",
+    "DEBUG = True",
 ]
 
 [tool.ruff]
