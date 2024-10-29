@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import botocore.exceptions
 import pytest
 from fastapi.testclient import TestClient
@@ -85,16 +83,18 @@ class TestShortenUrl(TestMixin):
         assert result.status_code == status.HTTP_400_BAD_REQUEST
         assert result.json() == {"detail": f"'{self.payload['short_path']}' path already exists, please use another one"}
 
-    def test_exceptions_reraised(self):
+    def test_exceptions_reraised(self, mocker):
         side_effect = botocore.exceptions.ClientError(
-            error_response={"Error": {"Message": "Failed retrieving Table"}},
-            operation_name="boto3.resource.Table",
+            error_response={"Error": {"Message": "Failed inserting the item"}},
+            operation_name="Table.put_item",
         )
-        with patch("app.api.v1.urls.get_db_table", side_effect=side_effect):
-            with pytest.raises(botocore.exceptions.ClientError) as exc:
-                self._shorten_url()
+        mocked_get_table = mocker.patch("app.api.v1.urls.get_db_table")
+        mocked_get_table.return_value.put_item.side_effect = side_effect
 
-        assert exc.value.response.get("Error", {}).get("Message") == "Failed retrieving Table"
+        with pytest.raises(botocore.exceptions.ClientError) as exc:
+            self._shorten_url()
+
+        assert exc.value.response.get("Error", {}).get("Message") == "Failed inserting the item"
 
     def test_throttled(self):
         self._simulate_prod()
