@@ -50,7 +50,11 @@ async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()])
 
     try:
         table.put_item(
-            Item={"ShortPath": data.short_path, "FullUrl": data.full_url, "CreatedAt": str(datetime.now())},
+            Item={
+                "ShortPath": data.short_path,
+                "FullUrl": data.full_url,
+                "CreatedAt": str(datetime.now()),
+            },
             ConditionExpression="attribute_not_exists(ShortPath)",
         )
     except botocore.exceptions.ClientError as exc:

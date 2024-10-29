@@ -31,5 +31,11 @@ async def catch_all_redirect(path: str, request: Request) -> RedirectResponse:
     if "Item" not in response:
         return RedirectResponse(request.url_for("home"), status_code=status.HTTP_304_NOT_MODIFIED)
 
+    table.update_item(
+        Key={"ShortPath": path},
+        UpdateExpression="ADD Visits :inc",
+        ExpressionAttributeValues={":inc": 1},
+    )
+
     full_url = str(response["Item"]["FullUrl"])
     return RedirectResponse(full_url, status_code=status.HTTP_302_FOUND)
