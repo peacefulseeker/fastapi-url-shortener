@@ -1,5 +1,6 @@
 # FastAPI URL Shortener
-https://shortenurl.fly.dev/ <br/>
+[LIVE Demo](https://shortenurl.fly.dev/)
+___
 <img src="./demo/preview.gif" alt="preview">
 
 ## Stack
