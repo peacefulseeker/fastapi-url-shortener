@@ -1,8 +1,6 @@
 # FastAPI URL Shortener
-
-Built with FastAPI and using DynamoDB for storage,
-this project provides a simple and efficient solution
-for managing and redirecting shortened links.
+https://shortenurl.fly.dev/ <br/>
+<img src="./demo/preview.gif" alt="preview">
 
 ## Stack
 - Python 3.11+
@@ -13,14 +11,8 @@ for managing and redirecting shortened links.
 
 <img src="./demo/schema.svg" alt="schema" width="500" height="500">
 
-# Live + Demo
-See live: https://shortenurl.fly.dev/ <br/>
-Demo: <br/>
-<img src="./demo/preview.gif" alt="preview">
 
-
-
-## Local development
+## Backend development locally
 1. Clone the repository:
 ```shell
 git clone git@github.com:peacefulseeker/fastapi-url-shortener.git ./local-project-dir
@@ -40,4 +32,12 @@ make dev
 3.1 Run the dockerized application in dev mode:
 ```shell
 docker-compose up -d --build
+```
+
+## Frontend development locally
+Given repo is already cloned you're currently in the root directory.
+```shell
+cd ./frontend
+pnpm install
+pnpm dev # proxies API calls to dockerized backend (8080 port atm.)
 ```
