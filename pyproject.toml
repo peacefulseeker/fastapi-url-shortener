@@ -25,6 +25,7 @@ bpython = "^0.24"
 moto = {extras = ["dynamodb"], version = "^5.0.18"}
 mypy-boto3-dynamodb = "^1.35.24"
 pytest = "^8.3.3"
+pytest-cov = "^5.0.0"
 pytest-env = "^1.1.5"
 pytest-mock = "^3.14.0"
 ruff = "^0.6.9"
@@ -39,6 +40,8 @@ addopts = [
 ]
 env = [
     "AWS_REGION_NAME = eu-central-1",
+    "BASIC_AUTH_PASSWORD = world",
+    "BASIC_AUTH_USERNAME = hello",
     "DEBUG = True",
 ]
 

@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class SettingsMixin:
     @staticmethod
     def parse_comma_separated_values(setting: str | tuple[str, ...]) -> tuple[str, ...]:
-        if isinstance(setting, str):
+        if isinstance(setting, str):  # pragma: no cover
             return tuple(item.strip() for item in setting.split(","))
         return setting
 
@@ -21,6 +21,11 @@ class DatabaseSettings(BaseSettings):
     aws_region_name: str = Field(default="local")
 
 
+class AuthSettings(BaseSettings):
+    basic_auth_username: str = Field(default="")
+    basic_auth_password: str = Field(default="")
+
+
 class CorsSettings(SettingsMixin, BaseSettings):
     cors_allowed_origins: str | tuple[str, ...] = Field(default=("*",))
     cors_allowed_methods: str | tuple[str, ...] = Field(default=("POST", "GET"))
@@ -30,7 +35,7 @@ class CorsSettings(SettingsMixin, BaseSettings):
         return super().parse_comma_separated_values(setting)
 
 
-class Settings(DatabaseSettings, CorsSettings):
+class Settings(DatabaseSettings, CorsSettings, AuthSettings):
     model_config = SettingsConfigDict(env_file="app/.env", env_file_encoding="utf-8")
 
     debug: bool = Field(default=False)

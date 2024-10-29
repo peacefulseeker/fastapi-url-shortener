@@ -5,6 +5,7 @@ notes.md
 __pycache__/
 *.pyc
 .env
+.coverage
 
 node_modules
 dist/

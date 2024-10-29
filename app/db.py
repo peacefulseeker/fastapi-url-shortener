@@ -2,13 +2,13 @@ from typing import TYPE_CHECKING
 
 import boto3
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
 
 from app.config import settings
 
 
-def get_ddb_resource() -> "DynamoDBServiceResource":
+def get_ddb_resource() -> "DynamoDBServiceResource":  # pragma: no cover
     resource: "DynamoDBServiceResource" = boto3.resource(
         "dynamodb",
         endpoint_url=settings.ddb_endpoint_url,

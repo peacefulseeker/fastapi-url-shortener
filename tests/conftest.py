@@ -1,3 +1,4 @@
+import base64
 from typing import TYPE_CHECKING, Generator
 
 import boto3
@@ -17,6 +18,14 @@ from app.main import app
 @pytest.fixture(scope="session")
 def client() -> TestClient:
     return TestClient(app)
+
+
+@pytest.fixture(scope="session")
+def client_with_basic_auth(client) -> TestClient:
+    auth_string = base64.b64encode(f"{settings.basic_auth_username}:{settings.basic_auth_password}".encode()).decode()
+    headers = {"Authorization": f"Basic {auth_string}"}
+    client.headers.update(headers)
+    return client
 
 
 @pytest.fixture

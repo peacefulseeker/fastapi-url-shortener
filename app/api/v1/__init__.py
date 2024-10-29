@@ -3,16 +3,17 @@ from typing import TYPE_CHECKING, Annotated
 
 import botocore
 import botocore.exceptions
-from fastapi import APIRouter, Form, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from pydantic import BaseModel
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from mypy_boto3_dynamodb.type_defs import ScanOutputTableTypeDef
 
 from app.config import settings
 from app.db import get_db_table
+from app.dependencies import require_basic_auth
 
 router = APIRouter(prefix="/api/v1")
 limiter = Limiter(key_func=get_remote_address)
@@ -49,8 +50,7 @@ async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()])
     }
 
 
-# TODO: should not be public, either remove or add basic auth to view
-@router.get("/list")
+@router.get("/list", dependencies=[Depends(require_basic_auth)])
 async def list_urls() -> dict:
     table = get_db_table()
     response: "ScanOutputTableTypeDef" = table.scan()
