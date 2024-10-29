@@ -10,7 +10,7 @@ ___
 - Docker
 - DynamoDB (DDB)
 
-<img src="./demo/schema.svg" alt="schema" width="500" height="500">
+<img src="./demo/schema.svg" alt="schema" width="50%">
 
 
 ## Backend development locally
@@ -43,3 +43,17 @@ cd ./frontend
 pnpm install
 pnpm dev # proxies API calls to dockerized backend (8080 port atm.)
 ```
+
+
+## PlantUML schema generation(VSCode specific)
+- Install [PlantUML](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml) extension
+- Add the following to your settings.json
+```json
+{
+    ...
+    "plantuml.exportOutDir": ".",
+    "plantuml.exportSubFolder": false,
+    ...
+}
+```
+- open `./demo/schema.puml` and run the command `PlantUML: Export Current Diagram`
