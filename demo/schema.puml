@@ -1,0 +1,46 @@
+@startuml schema
+skinparam backgroundColor #fff
+skinparam handwritten false
+
+actor Client
+participant "FastAPI Server" as API
+database "DynamoDB" as DynamoDB
+
+' URL Creation Flow
+Client -> API: POST /api/v1/urls/shorten\n{url: string}
+activate API
+API -> API: Generate short_path
+API -> DynamoDB: PutItem\n(ShortPath, FullUrl, CreatedAt)
+DynamoDB --> API: Item created
+API --> Client: Return shortened URL\n{short_url: string}
+deactivate API
+
+' URL Redirect Flow
+Client -> API: GET /{short_path}
+activate API
+API -> DynamoDB: GetItem\n(by ShortPath)
+alt Item Found
+    DynamoDB --> API: Return FullUrl
+    API --> Client: HTTP 302 Redirect\nto original URL
+else Item Not Found
+    DynamoDB --> API: No item found
+    API --> Client: HTTP 302 Redirect\nto homepage
+end
+deactivate API
+
+' List URLs Flow (Protected)
+Client -> API: GET /api/v1/urls/\n[Basic Auth Required]
+activate API
+API -> API: Validate Basic Auth credentials
+API -> DynamoDB: Scan\n(fetch all URLs)
+DynamoDB --> API: Return URLs list
+API --> Client: Return URLs array as JSON
+deactivate API
+
+note right of DynamoDB
+  DynamoDB Urls Table Schema:
+  - ShortPath (String) [Partition Key]
+  - FullUrl (String)
+  - CreatedAt (String)
+end note
+@enduml
