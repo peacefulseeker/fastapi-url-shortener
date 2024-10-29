@@ -9,7 +9,7 @@ pytestmark = pytest.mark.usefixtures("ddb")
 
 
 class TestMixin:
-    shorten_url = "/api/v1/shorten"
+    shorten_url = "/api/v1/urls/shorten"
     payload = {
         "short_path": "test",
         "full_url": "https://example.com",
@@ -33,7 +33,7 @@ class TestMixin:
 
 
 class TestListUrls(TestMixin):
-    url = "/api/v1/list"
+    url = "/api/v1/urls"
 
     def test_basic_auth_required(self):
         result = self.client.get(self.url)
@@ -43,7 +43,7 @@ class TestListUrls(TestMixin):
         assert result.headers["WWW-Authenticate"] == "Basic"
 
     def test_no_urls_created(self, client_with_basic_auth):
-        result = client_with_basic_auth.get("/api/v1/list")
+        result = client_with_basic_auth.get(self.url)
 
         assert result.status_code == status.HTTP_200_OK
         assert result.json()["detail"] == {"count": 0, "items": []}
@@ -90,7 +90,7 @@ class TestShortenUrl(TestMixin):
             error_response={"Error": {"Message": "Failed retrieving Table"}},
             operation_name="boto3.resource.Table",
         )
-        with patch("app.api.v1.get_db_table", side_effect=side_effect):
+        with patch("app.api.v1.urls.get_db_table", side_effect=side_effect):
             with pytest.raises(botocore.exceptions.ClientError) as exc:
                 self._shorten_url()
 
