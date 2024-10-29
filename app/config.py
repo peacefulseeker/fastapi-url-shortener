@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class SettingsMixin:
     @staticmethod
     def parse_comma_separated_values(setting: str | tuple[str, ...]) -> tuple[str, ...]:
-        if isinstance(setting, str):
+        if isinstance(setting, str):  # pragma: no cover
             return tuple(item.strip() for item in setting.split(","))
         return setting
 

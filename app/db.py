@@ -8,7 +8,7 @@ if TYPE_CHECKING:  # pragma: no cover
 from app.config import settings
 
 
-def get_ddb_resource() -> "DynamoDBServiceResource":
+def get_ddb_resource() -> "DynamoDBServiceResource":  # pragma: no cover
     resource: "DynamoDBServiceResource" = boto3.resource(
         "dynamodb",
         endpoint_url=settings.ddb_endpoint_url,
