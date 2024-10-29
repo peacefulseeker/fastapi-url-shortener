@@ -8,7 +8,7 @@ ___
 - FastAPI
 - Poetry
 - Docker
-- DynamoDB
+- DynamoDB (DDB)
 
 <img src="./demo/schema.svg" alt="schema" width="500" height="500">
 
@@ -25,14 +25,15 @@ cd ./local-project-dir
 poetry install
 ```
 
-3. Run the application in dev mode:
-```shell
-make dev
-```
-
-3.1 Run the dockerized application in dev mode:
+4. Run the dockerized services(backend app, local DDB instance and DDB admin) in dev mode:
 ```shell
 docker-compose up -d --build
+```
+
+5. OR run the dockerized DDB database, and web app(depends on DDB) locally:
+```shell
+docker-compose up -d --build ddb
+make dev
 ```
 
 ## Frontend development locally
