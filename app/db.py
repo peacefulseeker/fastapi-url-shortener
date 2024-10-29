@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import boto3
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
 
 from app.config import settings

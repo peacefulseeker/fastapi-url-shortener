@@ -1,3 +1,6 @@
+from unittest.mock import patch
+
+import botocore.exceptions
 import pytest
 from fastapi.testclient import TestClient
 from starlette import status
@@ -32,13 +35,20 @@ class TestMixin:
 class TestListUrls(TestMixin):
     url = "/api/v1/list"
 
-    def test_no_urls_created(self, client):
-        result = client.get("/api/v1/list")
+    def test_basic_auth_required(self):
+        result = self.client.get(self.url)
+
+        assert result.status_code == status.HTTP_401_UNAUTHORIZED
+        assert result.json() == {"detail": "Not authenticated"}
+        assert result.headers["WWW-Authenticate"] == "Basic"
+
+    def test_no_urls_created(self, client_with_basic_auth):
+        result = client_with_basic_auth.get("/api/v1/list")
 
         assert result.status_code == status.HTTP_200_OK
         assert result.json()["detail"] == {"count": 0, "items": []}
 
-    def test_list_created_urls(self, client):
+    def test_list_created_urls(self, client_with_basic_auth):
         self._shorten_url(
             payload={
                 "short_path": "ya",
@@ -52,7 +62,7 @@ class TestListUrls(TestMixin):
             },
         )
 
-        result = client.get(self.url)
+        result = client_with_basic_auth.get(self.url)
         assert result.status_code == status.HTTP_200_OK
         assert result.json()["detail"]["count"] == 2
 
@@ -74,6 +84,17 @@ class TestShortenUrl(TestMixin):
 
         assert result.status_code == status.HTTP_400_BAD_REQUEST
         assert result.json() == {"detail": f"'{self.payload['short_path']}' path already exists, please use another one"}
+
+    def test_exceptions_reraised(self):
+        side_effect = botocore.exceptions.ClientError(
+            error_response={"Error": {"Message": "Failed retrieving Table"}},
+            operation_name="boto3.resource.Table",
+        )
+        with patch("app.api.v1.get_db_table", side_effect=side_effect):
+            with pytest.raises(botocore.exceptions.ClientError) as exc:
+                self._shorten_url()
+
+        assert exc.value.response.get("Error", {}).get("Message") == "Failed retrieving Table"
 
     def test_throttled(self):
         self._simulate_prod()

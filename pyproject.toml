@@ -29,6 +29,7 @@ pytest-env = "^1.1.5"
 pytest-mock = "^3.14.0"
 ruff = "^0.6.9"
 toml-sort = "^0.23.1"
+pytest-cov = "^5.0.0"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -38,8 +39,11 @@ addopts = [
     "-p no:warnings",
 ]
 env = [
-    "AWS_REGION_NAME = eu-central-1",
     "DEBUG = True",
+
+    "AWS_REGION_NAME = eu-central-1",
+    "BASIC_AUTH_USERNAME = hello",
+    "BASIC_AUTH_PASSWORD = world",
 ]
 
 [tool.ruff]
