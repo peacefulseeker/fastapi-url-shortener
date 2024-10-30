@@ -14,13 +14,18 @@ def get_frontend_assets_url() -> str:
 
 
 async def home(request: Request) -> _TemplateResponse:
+    context: dict = {
+        "origin": request.base_url,
+    }
+    if settings.debug:
+        context["vite_origin"] = settings.vite_origin
+    else:
+        context["frontend_assets_url"] = get_frontend_assets_url()
+
     return templates.TemplateResponse(
         request=request,
         name="index.html",
-        context={
-            "origin": request.base_url,
-            "frontend_assets_url": get_frontend_assets_url(),
-        },
+        context=context,
     )
 
 

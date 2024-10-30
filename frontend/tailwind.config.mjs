@@ -1,7 +1,11 @@
 import daisyui from "daisyui";
 
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts}"],
+  content: [
+    "./index.html",
+    "../app/templates/**/*.html",
+    "./src/**/*.{js,ts}",
+  ],
 
   theme: {
     fontFamily: {
@@ -11,10 +15,9 @@ export default {
 
   // always include in css output, regardless JIT
   safelist: [
-    'alert-warning',
-    'alert-success',
-    'alert-error',
-    'alert-info',
+    {
+        pattern: /alert-*/
+    }
   ],
 
   plugins: [daisyui],

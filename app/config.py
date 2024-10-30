@@ -35,10 +35,13 @@ class CorsSettings(SettingsMixin, BaseSettings):
         return super().parse_comma_separated_values(setting)
 
 
-class Settings(DatabaseSettings, CorsSettings, AuthSettings):
-    model_config = SettingsConfigDict(env_file="app/.env", env_file_encoding="utf-8")
-
+class DevelopmentSettings(BaseSettings):
     debug: bool = Field(default=False)
+    vite_origin: str = Field(default="http://localhost:5555")
+
+
+class Settings(DatabaseSettings, CorsSettings, AuthSettings, DevelopmentSettings):
+    model_config = SettingsConfigDict(env_file="app/.env", env_file_encoding="utf-8")
 
     aws_cloudfront_domain: str = Field(default="")
     frontend_assets_version: str = Field(default="")
