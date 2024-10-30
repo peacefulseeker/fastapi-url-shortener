@@ -10,6 +10,7 @@ class Form extends HTMLElement {
 
         <input type="url" name="full_url"
             autofocus
+            required
             pattern="https?://.*"
             autocomplete="url"
             placeholder="Paste full URL"
