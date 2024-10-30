@@ -37,4 +37,4 @@ servefrontend:
 	cd frontend && pnpm dev
 
 deployfrontend:
-	./deploy_frontend_version.sh
+	cd frontend && sh ./deploy_assets_version_to_s3.sh
