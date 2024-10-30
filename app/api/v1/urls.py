@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Annotated
 
 import botocore
@@ -22,6 +22,21 @@ limiter = Limiter(key_func=get_remote_address)
 class ShortenUrlForm(BaseModel):
     short_path: str = Form()
     full_url: str = Form()
+
+
+class UrlItem(BaseModel):
+    ShortPath: str
+    FullUrl: str
+    CreatedAt: str
+    ExpiresAt: int = int((datetime.now() + timedelta(days=settings.url_expiration_in_days)).timestamp())
+
+
+def _construct_item(data: ShortenUrlForm) -> UrlItem:
+    return UrlItem(
+        ShortPath=data.short_path,
+        FullUrl=data.full_url,
+        CreatedAt=datetime.now().isoformat(),
+    )
 
 
 @router.get("", dependencies=[Depends(require_basic_auth)])
@@ -49,12 +64,9 @@ async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()])
     table = get_db_table()
 
     try:
+        item = _construct_item(data)
         table.put_item(
-            Item={
-                "ShortPath": data.short_path,
-                "FullUrl": data.full_url,
-                "CreatedAt": str(datetime.now()),
-            },
+            Item=item.model_dump(),
             ConditionExpression="attribute_not_exists(ShortPath)",
         )
     except botocore.exceptions.ClientError as exc:
@@ -69,5 +81,6 @@ async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()])
     return {
         "detail": {
             "shortened_url": str(request.base_url.replace(path=data.short_path)),
-        }
+            "expires_at": item.ExpiresAt,
+        },
     }

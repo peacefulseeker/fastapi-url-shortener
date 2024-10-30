@@ -43,6 +43,8 @@ class Settings(DatabaseSettings, CorsSettings, AuthSettings):
     aws_cloudfront_domain: str = Field(default="")
     frontend_assets_version: str = Field(default="")
 
+    url_expiration_in_days: int = Field(default=30)
+
     @classmethod
     @lru_cache
     def load(cls) -> "Settings":

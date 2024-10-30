@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import botocore.exceptions
 import pytest
 from fastapi.testclient import TestClient
@@ -73,7 +75,11 @@ class TestShortenUrl(TestMixin):
         result = self._shorten_url()
 
         assert result.status_code == status.HTTP_201_CREATED
-        assert result.json()["detail"] == {"shortened_url": "http://testserver/google"}  # pytest defined
+        result = result.json()["detail"]
+
+        assert result["shortened_url"] == "http://testserver/google"
+        assert isinstance(result["expires_at"], int)
+        assert result["expires_at"] > datetime.now().timestamp()
 
     def test_duplicate_paths_disallowed(self):
         self._shorten_url()
