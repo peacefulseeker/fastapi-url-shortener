@@ -1,9 +1,5 @@
 
 test = poetry run pytest --capture=fd --verbosity=0
-testwithcoverage = $(test) \
-		--cov=app \
-		--cov-report=term-missing:skip-covered \
-		--cov-fail-under=90
 
 dev:
 	fastapi dev app/main.py
@@ -22,7 +18,13 @@ fmt:
 	poetry run toml-sort pyproject.toml
 
 test:
-	poetry run pytest
+	${test}
+
+testparallel:
+	${test} -n auto
 
 testwithcoverage:
-	$(testwithcoverage)
+	$(test) \
+		--cov=app \
+		--cov-report=term-missing:skip-covered \
+		--cov-fail-under=90

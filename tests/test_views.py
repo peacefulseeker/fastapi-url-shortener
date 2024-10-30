@@ -2,7 +2,7 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from tests.db import TestDDB
+from tests.db import DDB
 
 
 class TestHomePage:
@@ -25,7 +25,7 @@ class TestHomePage:
 
 @pytest.mark.usefixtures("ddb")
 class TestCatchAllRedirect:
-    def _put_item(self, ddb: TestDDB):
+    def _put_item(self, ddb: DDB):
         ddb.table.put_item(  # type: ignore
             Item={
                 "ShortPath": "test",
@@ -39,7 +39,7 @@ class TestCatchAllRedirect:
         assert response.status_code == status.HTTP_304_NOT_MODIFIED
         assert response.headers["location"] == "http://testserver/"
 
-    def test_redirects_to_full_url_when_path_found(self, client: TestClient, ddb: TestDDB):
+    def test_redirects_to_full_url_when_path_found(self, client: TestClient, ddb: DDB):
         self._put_item(ddb)
 
         response = client.get("/test")
@@ -48,7 +48,7 @@ class TestCatchAllRedirect:
         assert response.history[0].status_code == status.HTTP_302_FOUND
         assert response.status_code == status.HTTP_200_OK
 
-    def test_visits_attribute_increments_by_one(self, client: TestClient, ddb: TestDDB):
+    def test_visits_attribute_increments_by_one(self, client: TestClient, ddb: DDB):
         self._put_item(ddb)
 
         visits = 5

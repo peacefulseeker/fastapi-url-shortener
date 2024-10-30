@@ -9,7 +9,7 @@ from moto import mock_aws
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb import DynamoDBServiceResource
 
-from tests.db import TestDDB
+from tests.db import DDB
 
 from app.config import settings
 from app.main import app
@@ -42,7 +42,7 @@ def get_ddb_resource(mocker, ddb_resource):
 
 @pytest.fixture()
 def ddb(ddb_resource):
-    ddb = TestDDB(ddb_resource)
-    ddb.create()
+    ddb = DDB(ddb_resource)
+    ddb.create_table()
     yield ddb
-    ddb.delete()
+    ddb.delete_table()

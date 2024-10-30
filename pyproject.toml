@@ -15,6 +15,7 @@ boto3 = {extras = ["dynamodb"], version = "^1.35.38"}
 fastapi = {extras = ["standard"], version = "^0.115.0"}
 jinja2 = "^3.1.4"
 pydantic-settings = "^2.5.2"
+pytest-xdist = {extras = ["psutil"], version = "^3.6.1"}
 python = "~3.11"
 python-multipart = "^0.0.12"
 slowapi = "^0.1.9"
