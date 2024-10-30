@@ -15,13 +15,6 @@ export class Toast extends HTMLElement {
 
   constructor() {
     super();
-    this.innerHTML = `
-        <div id="toast" class="toast toast-top toast-end opacity-0 transition-opacity duration-400 whitespace-normal">
-            <div id="toast-alert" class="alert text-white">
-                <span id="toast-message"></span>
-            </div>
-        </div>
-    `;
     this.toast = this.querySelector("#toast") as HTMLDivElement;
     this.alert = this.querySelector("#toast-alert") as HTMLDivElement;
     this.message = this.querySelector("#toast-message") as HTMLSpanElement;

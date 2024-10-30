@@ -13,35 +13,31 @@ ___
 <img src="./demo/schema.svg" alt="schema" width="50%">
 
 
-## Backend development locally
+## Backend development
 1. Clone the repository:
-```shell
-git clone git@github.com:peacefulseeker/fastapi-url-shortener.git ./local-project-dir
-cd ./local-project-dir
-```
+    ```shell
+    git clone git@github.com:peacefulseeker/fastapi-url-shortener.git ./local-project-dir
+    cd ./local-project-dir
+    ```
 
 2. Install dependencies:
-```shell
-poetry install
-```
+    ```shell
+    poetry install
+    ```
 
-4. Run the dockerized services(backend app, local DDB instance and DDB admin) in dev mode:
-```shell
-docker-compose up -d --build
-```
+3. Run the dockerized services(local DDB instance and DDB admin) in dev mode:
+    ```shell
+    docker-compose up -d --build
+    ```
+    3.1. Run the fastapi app in dev mode:
+    ```shell
+    make dev
 
-5. OR run the dockerized DDB database, and web app(depends on DDB) locally:
-```shell
-docker-compose up -d --build ddb
-make dev
-```
-
-## Frontend development locally
-Given repo is already cloned you're currently in the root directory.
+## Frontend development
 ```shell
 cd ./frontend
 pnpm install
-pnpm dev # proxies API calls to dockerized backend (8080 port atm.)
+pnpm dev # proxies API calls to locally running backend (http://localhost:8000 atm.)
 ```
 
 

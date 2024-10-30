@@ -2,10 +2,10 @@
 test = poetry run pytest --capture=fd --verbosity=0
 
 dev:
-	fastapi dev app/main.py
+	fastapi dev app/main.py --port 8000
 
 prod:
-	fastapi run app/main.py
+	DEBUG=false fastapi run app/main.py --port 8000
 
 lint:
 	poetry run ruff format --check app tests
@@ -28,3 +28,13 @@ testwithcoverage:
 		--cov=app \
 		--cov-report=term-missing:skip-covered \
 		--cov-fail-under=90
+
+
+buildfrontend:
+	cd frontend && pnpm run build
+
+servefrontend:
+	cd frontend && pnpm dev
+
+deployfrontend:
+	./deploy_frontend_version.sh
