@@ -1,5 +1,7 @@
 FROM python:3.11-slim-bookworm
 
+WORKDIR /app
+
 # Makefile commands
 RUN apt-get update && apt-get install make
 
@@ -12,7 +14,5 @@ RUN pip install --upgrade pip
 RUN pip install poetry==${POETRY_VERSION}
 
 COPY pyproject.toml poetry.lock .
-
-WORKDIR /app
 
 RUN poetry install --with dev
