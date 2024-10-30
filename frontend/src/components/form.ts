@@ -15,6 +15,7 @@ class Form extends HTMLElement {
             autocomplete="url"
             placeholder="Paste full URL"
             class="input input-bordered w-full mb-4" />
+
         <label class="input input-bordered flex items-center gap-2 pl-0 w-full mb-4">
             <span class="bg-neutral-100 flex items-center h-full px-2 rounded-l-md">${origin}</span>
             <input name="short_path" type="text" required autocomplete placeholder="shortpath" class="grow" maxlength="20" />
