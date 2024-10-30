@@ -29,7 +29,7 @@ ___
     ```shell
     docker-compose up -d --build
     ```
-    1. Run the fastapi app in dev mode:
+    3.1. Run the fastapi app in dev mode:
     ```shell
     make dev
 
