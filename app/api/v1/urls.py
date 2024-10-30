@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Annotated
 import botocore
 import botocore.exceptions
 from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
-from pydantic import BaseModel
+from pydantic import AliasGenerator, BaseModel, ConfigDict, alias_generators
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -25,17 +25,21 @@ class ShortenUrlForm(BaseModel):
 
 
 class UrlItem(BaseModel):
-    ShortPath: str
-    FullUrl: str
-    CreatedAt: str
-    ExpiresAt: int = int((datetime.now() + timedelta(days=settings.url_expiration_in_days)).timestamp())
+    short_path: str
+    full_url: str
+    created_at: str
+    expires_at: int = int((datetime.now() + timedelta(days=settings.url_expiration_in_days)).timestamp())
+
+    model_config = ConfigDict(
+        alias_generator=AliasGenerator(serialization_alias=alias_generators.to_pascal),
+    )
 
 
 def _construct_item(data: ShortenUrlForm) -> UrlItem:
     return UrlItem(
-        ShortPath=data.short_path,
-        FullUrl=data.full_url,
-        CreatedAt=datetime.now().isoformat(),
+        short_path=data.short_path,
+        full_url=data.full_url,
+        created_at=datetime.now().isoformat(),
     )
 
 
@@ -66,7 +70,7 @@ async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()])
     try:
         item = _construct_item(data)
         table.put_item(
-            Item=item.model_dump(),
+            Item=item.model_dump(by_alias=True),
             ConditionExpression="attribute_not_exists(ShortPath)",
         )
     except botocore.exceptions.ClientError as exc:
@@ -81,6 +85,6 @@ async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()])
     return {
         "detail": {
             "shortened_url": str(request.base_url.replace(path=data.short_path)),
-            "expires_at": item.ExpiresAt,
+            "expires_at": item.expires_at,
         },
     }
