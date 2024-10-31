@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+#toast-close::before {
+    content: "×";
+    font-size: 1.5em;
+}
+
+.toast-visible {
+    @apply opacity-100 pointer-events-auto;
+}
+
+.btn-form-submitting {
+    transform: scale(var(--btn-focus-scale, 0.97));
+}

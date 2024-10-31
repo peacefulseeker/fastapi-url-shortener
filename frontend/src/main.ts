@@ -1,6 +1,6 @@
+import "htmx.org"; // prettier-ignore
+
 import "./style.css";
-import "htmx.org";
-
-import "./components/toast";
-
 import "./handlers/htmx.beforeSwap";
+import "./components/toast";
+import "./components/form";

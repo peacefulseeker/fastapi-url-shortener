@@ -2,10 +2,10 @@
 test = poetry run pytest --capture=fd --verbosity=0
 
 dev:
-	fastapi dev app/main.py --port 8000
+	fastapi dev app/main.py --port 8000 --host 0.0.0.0
 
 prod:
-	DEBUG=false fastapi run app/main.py --port 8000
+	DEBUG=false fastapi run app/main.py --port 8000 --host 0.0.0.0
 
 lint:
 	poetry run ruff format --check app tests
