@@ -40,15 +40,15 @@ export class Form extends HTMLElement {
 
   processUrlShortened(responseMessage: ShortenedUrlResponse, toast: Toast) {
     const copied = copy(responseMessage.shortened_url);
-    let toastMessage = `Short URL <pre class="break-all text-sm font-bold whitespace-pre-wrap">${responseMessage.shortened_url}</pre> created`;
+    let toastMessage = `Short URL <a class="break-all text-sm font-bold whitespace-pre-wrap" href="${responseMessage.shortened_url}" target="_blank">${responseMessage.shortened_url}</a> created`;
     if (copied) {
-      toastMessage += `and copied to clipboard!`;
+      toastMessage += ` and copied to clipboard!`;
       if (responseMessage.expires_at) {
         const expiresAt = new Date(responseMessage.expires_at * 1000).toLocaleString();
         toastMessage += `<br />With expiration date set to ${expiresAt}`;
       }
     } else {
-      toastMessage = `Short URL <pre class="break-all text-sm font-bold whitespace-pre-wrap">${responseMessage.shortened_url}</pre> created succesfully!`;
+      toastMessage += ` succesfully!`;
     }
     toast.show(toastMessage, ToastLevel.SUCCESS, null);
   }
