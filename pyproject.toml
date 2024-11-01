@@ -43,7 +43,7 @@ env = [
     "AWS_REGION_NAME = eu-central-1",
     "BASIC_AUTH_PASSWORD = world",
     "BASIC_AUTH_USERNAME = hello",
-    "DEBUG = True",
+    "DEBUG = False",
 ]
 
 [tool.ruff]

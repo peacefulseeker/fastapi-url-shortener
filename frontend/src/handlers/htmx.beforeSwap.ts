@@ -1,12 +1,27 @@
-import copy from "copy-to-clipboard";
 import { Toast, ToastLevel } from "../components/toast";
+import { ShortenedUrlResponse } from "../types";
+import copy from "copy-to-clipboard";
 
-async function toastifyResponse(evt: CustomEvent) {
+function processUrlShortened(responseMessage: ShortenedUrlResponse, toast: Toast) {
+  const copied = copy(responseMessage.shortened_url);
+  let toastMessage = `Short URL <pre class="break-all text-sm font-bold whitespace-pre-wrap">${responseMessage.shortened_url}</pre> created`;
+  if (copied) {
+    toastMessage += `and copied to clipboard!`;
+    if (responseMessage.expires_at) {
+      const expiresAt = new Date(responseMessage.expires_at * 1000).toLocaleString();
+      toastMessage += `<br />With expiration date set to ${expiresAt}`;
+    }
+  } else {
+    toastMessage = `Short URL <pre class="break-all text-sm font-bold whitespace-pre-wrap">${responseMessage.shortened_url}</pre> created succesfully!`;
+  }
+  toast.show(toastMessage, ToastLevel.SUCCESS, null);
+}
+
+function toastifyResponse(evt: CustomEvent) {
   const status = evt.detail.xhr.status;
   const toast = document.querySelector("c-toast") as Toast;
 
   let responseMessage;
-  let toastLevel = ToastLevel.SUCCESS;
   try {
     responseMessage = JSON.parse(evt.detail.serverResponse)["detail"];
   } catch {
@@ -14,21 +29,14 @@ async function toastifyResponse(evt: CustomEvent) {
   }
 
   if (status >= 200 && status < 300) {
-    if (status === 201 && responseMessage["shortened_url"]) {
-      const copied = copy(responseMessage.shortened_url);
-      if (copied) {
-        responseMessage = `Short URL ${responseMessage.shortened_url} created and copied to clipboard!`;
-      } else {
-        responseMessage = `Short URL ${responseMessage.shortened_url} created succesfully!`;
-      }
+    if (status === 201 && responseMessage.shortened_url) {
+      processUrlShortened(responseMessage, toast);
     }
   } else if (status >= 400 && status < 500) {
-    toastLevel = ToastLevel.WARNING;
+    toast.show(responseMessage, ToastLevel.WARNING);
   } else if (status >= 500) {
-    toastLevel = ToastLevel.ERROR;
-    responseMessage = "Something went wrong, please try again later.";
+    toast.show("Something went wrong, please try again later.", ToastLevel.ERROR);
   }
-  toast.show(responseMessage, toastLevel);
 }
 
 document.addEventListener("htmx:beforeSwap", toastifyResponse);

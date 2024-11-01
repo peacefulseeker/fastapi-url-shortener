@@ -2,12 +2,11 @@
     "$schema": "https://json.schemastore.org/prettierrc",
     "semi": true,
     "tabWidth": 2,
-    "singleQuote": true,
+    "singleQuote": false,
     "printWidth": 100,
     "trailingComma": "all",
     "bracketSameLine": true,
     "bracketSpacing": true,
-    "vueIndentScriptAndStyle": true,
     "plugins": [
         "prettier-plugin-tailwindcss",
         "@ianvs/prettier-plugin-sort-imports"
