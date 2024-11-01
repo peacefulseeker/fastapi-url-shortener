@@ -5,6 +5,8 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette import status
 
+from app.api.v1.urls.url_shortener import UrlShortener
+
 pytestmark = pytest.mark.usefixtures("ddb")
 
 
@@ -71,9 +73,12 @@ class TestShortenUrl(TestMixin):
         limiter.reset()
 
     def test_success(self):
-        self.payload["short_path"] = "google"
+        payload = {
+            "short_path": "google",
+            "full_url": "https://google.com",
+        }
 
-        result = self._shorten_url()
+        result = self._shorten_url(payload)
 
         assert result.status_code == status.HTTP_201_CREATED
         result = result.json()["detail"]
@@ -90,12 +95,85 @@ class TestShortenUrl(TestMixin):
         assert result.status_code == status.HTTP_400_BAD_REQUEST
         assert result.json() == {"detail": f"'{self.payload['short_path']}' path already exists, please use another one"}
 
+    def test_generate_random_path(self):
+        result = UrlShortener._generate_random_short_path()
+        assert len(result) == 8
+        assert result.isalnum()
+
+        result = UrlShortener._generate_random_short_path(12)
+        assert len(result) == 12
+
+    def test_shorten_with_custom_short_path(self):
+        payload = {
+            "short_path": "",
+            "full_url": "https://google.com",
+        }
+
+        result = self._shorten_url(payload)
+        assert result.status_code == status.HTTP_201_CREATED
+        assert result.json()["detail"]["short_path"] != self.payload["short_path"]
+
+    def test_shorten_same_full_url_returns_existing_item(self):
+        payload = {
+            "short_path": "",
+            "full_url": "https://google.com/",
+        }
+
+        result_shortened = self._shorten_url(payload)
+        result_existing = self._shorten_url(payload)
+
+        assert result_shortened.status_code == status.HTTP_201_CREATED
+        assert result_existing.status_code == status.HTTP_200_OK
+        assert result_existing.json()["detail"]["short_path"] == result_shortened.json()["detail"]["short_path"]
+
+    def test_returns_existing_item(self, mocker):
+        payload_existing = {
+            "short_path": "existing",
+            "full_url": "https://google.com/",
+        }
+        self._shorten_url(payload_existing)
+
+        payload_random = {
+            "short_path": "",
+            "full_url": "https://google.com/",
+        }
+        result = self._shorten_url(payload_random)
+        assert result.status_code == status.HTTP_200_OK
+        assert result.json()["detail"]["short_path"] == payload_existing["short_path"]
+
+    def test_creates_random_path_in_loop_until_succeeds(self, mocker):
+        existing_short_path = "existing"
+        payload_existing = {
+            "short_path": existing_short_path,
+            "full_url": "https://google.com/",
+        }
+        mock_generate = mocker.patch(
+            "app.api.v1.urls.url_shortener.UrlShortener._generate_random_short_path",
+            side_effect=[
+                existing_short_path,
+                existing_short_path,
+                "new",
+            ],
+        )
+
+        self._shorten_url(payload_existing)
+
+        payload_random = {
+            "short_path": "",
+            "full_url": "https://another.com/",
+        }
+        result = self._shorten_url(payload_random)
+
+        assert mock_generate.call_count == 3
+        assert result.status_code == status.HTTP_201_CREATED
+        assert result.json()["detail"]["short_path"] == "new"
+
     def test_exceptions_reraised(self, mocker):
         side_effect = botocore.exceptions.ClientError(
             error_response={"Error": {"Message": "Failed inserting the item"}},
             operation_name="Table.put_item",
         )
-        mocked_get_table = mocker.patch("app.api.v1.urls.get_db_table")
+        mocked_get_table = mocker.patch("app.api.v1.urls.url_shortener.get_db_table")
         mocked_get_table.return_value.put_item.side_effect = side_effect
 
         with pytest.raises(botocore.exceptions.ClientError) as exc:

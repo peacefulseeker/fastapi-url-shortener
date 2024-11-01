@@ -16,8 +16,19 @@ class DDB:
         self.resource.create_table(
             TableName=self.table_name,
             KeySchema=[{"AttributeName": "ShortPath", "KeyType": "HASH"}],
-            AttributeDefinitions=[{"AttributeName": "ShortPath", "AttributeType": "S"}],
+            AttributeDefinitions=[
+                {"AttributeName": "ShortPath", "AttributeType": "S"},
+                {"AttributeName": "FullUrl", "AttributeType": "S"},
+            ],
             ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
+            GlobalSecondaryIndexes=[
+                {
+                    "IndexName": "FullUrl-index",
+                    "KeySchema": [{"AttributeName": "FullUrl", "KeyType": "HASH"}],
+                    "Projection": {"ProjectionType": "INCLUDE", "NonKeyAttributes": ["ExpiresAt"]},
+                    "ProvisionedThroughput": {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
+                }
+            ],
         )
         self.table = self.resource.Table(self.table_name)
 
