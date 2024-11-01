@@ -26,11 +26,6 @@ class TestMixin:
         )
         return result
 
-    def _simulate_prod(self):
-        from app.config import settings
-
-        settings.debug = False
-
 
 class TestListUrls(TestMixin):
     url = "/api/v1/urls"
@@ -69,6 +64,12 @@ class TestListUrls(TestMixin):
 
 @pytest.mark.usefixtures("ddb")
 class TestShortenUrl(TestMixin):
+    @pytest.fixture(autouse=True)
+    def _reset_limiter(self):
+        from app.api.v1.urls import limiter
+
+        limiter.reset()
+
     def test_success(self):
         self.payload["short_path"] = "google"
 
@@ -103,8 +104,6 @@ class TestShortenUrl(TestMixin):
         assert exc.value.response.get("Error", {}).get("Message") == "Failed inserting the item"
 
     def test_throttled(self):
-        self._simulate_prod()
-
         for _ in range(5):
             self._shorten_url()
 

@@ -46,3 +46,10 @@ def ddb(ddb_resource):
     ddb.create_table()
     yield ddb
     ddb.delete_table()
+
+
+@pytest.fixture
+def _settings():
+    from app.config import settings
+
+    return settings

@@ -75,10 +75,10 @@ def _put_random_url_item(table: "Table", data: ShortenUrlForm) -> UrlItem | Exis
                 ConditionExpression="attribute_not_exists(ShortPath)",
             )
             return item
-        except botocore.exceptions.ClientError as e:
-            if e.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
+        except botocore.exceptions.ClientError as exc:
+            if exc.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
                 continue
-            raise
+            raise exc
 
 
 def _put_custom_url_item(table: "Table", data: ShortenUrlForm) -> UrlItem:
