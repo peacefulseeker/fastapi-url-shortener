@@ -37,6 +37,7 @@ class CorsSettings(SettingsMixin, BaseSettings):
 
 class DevelopmentSettings(BaseSettings):
     debug: bool = Field(default=False)
+    loadtest: bool = Field(default=False)
     vite_origin: str = Field(default="http://localhost:5555")
 
 

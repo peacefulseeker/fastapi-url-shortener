@@ -36,7 +36,7 @@ async def list_urls() -> dict:
 @limiter.limit(
     "5/minute",
     error_message="Hold on, too many requests.",
-    exempt_when=lambda: settings.debug,
+    exempt_when=lambda: settings.debug or settings.loadtest,
 )
 async def shorten_url(request: Request, data: Annotated[ShortenUrlForm, Form()], response: Response) -> dict:
     item = UrlShortener(data).item
