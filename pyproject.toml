@@ -18,6 +18,7 @@ pydantic-settings = "^2.5.2"
 pytest-xdist = {extras = ["psutil"], version = "^3.6.1"}
 python = "~3.11"
 python-multipart = "^0.0.12"
+sentry-sdk = {extras = ["fastapi"], version = "^2.18.0"}
 slowapi = "^0.1.9"
 toml-sort = "^0.23.1"
 
