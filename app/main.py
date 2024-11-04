@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.v1 import urls
+from app.api.v1 import urls_api
 from app.config import settings
 from app.views import catch_all_redirect, home
 
@@ -16,5 +16,5 @@ app.add_middleware(
     allow_methods=settings.cors_allowed_methods,
 )
 app.add_api_route("/", home, name="home")
-app.include_router(urls.router, prefix="/api/v1")
+app.include_router(urls_api.router, prefix="/api/v1")
 app.add_api_route("/{path:path}", catch_all_redirect, methods=["GET"])

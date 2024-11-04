@@ -8,7 +8,7 @@ from starlette import status
 
 from tests.conftest import mock_dependency
 
-from app.api.v1 import urls
+from app.api.v1 import urls_api
 from app.api.v1.urls.url_shortener import UrlShortener
 from app.db import get_db_table
 
@@ -73,7 +73,7 @@ class TestListUrls(TestMixin):
 class TestShortenUrl(TestMixin):
     @pytest.fixture(autouse=True)
     def _reset_limiter(self):
-        urls.limiter.reset()
+        urls_api.limiter.reset()
 
     def test_success(self):
         payload = {
