@@ -6,8 +6,7 @@ from slowapi.util import get_remote_address
 
 from app.api.v1.urls.url_shortener import ExistingUrlItem, ShortenUrlForm, UrlShortener
 from app.config import settings
-from app.db import GetDBTable
-from app.dependencies import require_basic_auth
+from app.dependencies import GetDBTable, require_basic_auth
 
 
 class UrlsAPI:

@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING
 
 import boto3
-from fastapi import Depends
 
 if TYPE_CHECKING:  # pragma: no cover
     from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
@@ -22,6 +21,3 @@ def get_ddb_resource() -> "DynamoDBServiceResource":  # pragma: no cover
 
 def get_db_table(table=settings.ddb_table_name) -> "Table":
     return get_ddb_resource().Table(table)
-
-
-GetDBTable = Annotated["Table", Depends(get_db_table)]

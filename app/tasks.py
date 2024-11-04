@@ -1,4 +1,4 @@
-from app.db import GetDBTable
+from app.dependencies import GetDBTable
 
 
 def increment_url_visits(short_path: str, table: GetDBTable) -> None:

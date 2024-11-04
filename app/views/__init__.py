@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 from starlette.templating import _TemplateResponse
 
 from app.config import settings, templates
-from app.db import GetDBTable
+from app.dependencies import GetDBTable
 from app.tasks import increment_url_visits
 
 
