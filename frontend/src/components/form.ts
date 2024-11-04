@@ -4,18 +4,26 @@ import copy from "copy-to-clipboard";
 
 export class Form extends HTMLElement {
   private submitBtn: HTMLButtonElement;
+  private form: HTMLFormElement;
 
   constructor() {
     super();
 
     this.submitBtn = this.querySelector(".btn") as HTMLButtonElement;
+    this.form = this.querySelector("form") as HTMLFormElement;
   }
 
-  onSubmit = () => {
-    this.submitBtn.classList.add("btn-form-submitting");
+  onBeforeRequest = () => {
+    this.form.classList.add("submitting");
+
+    this.submitBtn.classList.add("clicked");
     setTimeout(() => {
-      this.submitBtn.classList.remove("btn-form-submitting");
+      this.submitBtn.classList.remove("clicked");
     }, 200);
+  };
+
+  onAfterRequest = () => {
+    this.form.classList.remove("submitting");
   };
 
   onBeforeSwap = (evt: CustomEvent) => {
