@@ -1,11 +1,16 @@
 from datetime import datetime
+from unittest.mock import Mock
 
 import botocore.exceptions
 import pytest
 from fastapi.testclient import TestClient
 from starlette import status
 
+from tests.conftest import mock_dependency
+
+from app.api.v1 import urls
 from app.api.v1.urls.url_shortener import UrlShortener
+from app.db import get_db_table
 
 pytestmark = pytest.mark.usefixtures("ddb")
 
@@ -68,9 +73,7 @@ class TestListUrls(TestMixin):
 class TestShortenUrl(TestMixin):
     @pytest.fixture(autouse=True)
     def _reset_limiter(self):
-        from app.api.v1.urls import limiter
-
-        limiter.reset()
+        urls.limiter.reset()
 
     def test_success(self):
         payload = {
@@ -96,11 +99,11 @@ class TestShortenUrl(TestMixin):
         assert result.json() == {"detail": f"'{self.payload['short_path']}' path already exists, please use another one"}
 
     def test_generate_random_path(self):
-        result = UrlShortener._generate_random_short_path()
+        result = UrlShortener.generate_random_short_path()
         assert len(result) == 8
         assert result.isalnum()
 
-        result = UrlShortener._generate_random_short_path(12)
+        result = UrlShortener.generate_random_short_path(12)
         assert len(result) == 12
 
     def test_shorten_with_custom_short_path(self):
@@ -148,7 +151,7 @@ class TestShortenUrl(TestMixin):
             "full_url": "https://google.com/",
         }
         mock_generate = mocker.patch(
-            "app.api.v1.urls.url_shortener.UrlShortener._generate_random_short_path",
+            "app.api.v1.urls.url_shortener.UrlShortener.generate_random_short_path",
             side_effect=[
                 existing_short_path,
                 existing_short_path,
@@ -168,16 +171,17 @@ class TestShortenUrl(TestMixin):
         assert result.status_code == status.HTTP_201_CREATED
         assert result.json()["detail"]["short_path"] == "new"
 
-    def test_exceptions_reraised(self, mocker):
+    def test_exceptions_reraised(self):
         side_effect = botocore.exceptions.ClientError(
             error_response={"Error": {"Message": "Failed inserting the item"}},
             operation_name="Table.put_item",
         )
-        mocked_get_table = mocker.patch("app.api.v1.urls.url_shortener.get_db_table")
-        mocked_get_table.return_value.put_item.side_effect = side_effect
+        mocked_get_db_table = Mock()
+        mocked_get_db_table.put_item.side_effect = side_effect
 
-        with pytest.raises(botocore.exceptions.ClientError) as exc:
-            self._shorten_url()
+        with mock_dependency(get_db_table, mocked_get_db_table):
+            with pytest.raises(botocore.exceptions.ClientError) as exc:
+                self._shorten_url()
 
         assert exc.value.response.get("Error", {}).get("Message") == "Failed inserting the item"
 

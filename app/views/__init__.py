@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 from starlette.templating import _TemplateResponse
 
 from app.config import settings, templates
-from app.db import get_db_table
+from app.db import GetDBTable
 
 
 def get_frontend_assets_url() -> str:
@@ -13,7 +13,7 @@ def get_frontend_assets_url() -> str:
     return "/static/frontend"
 
 
-async def home(request: Request) -> _TemplateResponse:
+def home(request: Request) -> _TemplateResponse:
     context: dict = {
         "origin": request.base_url,
     }
@@ -29,8 +29,7 @@ async def home(request: Request) -> _TemplateResponse:
     )
 
 
-async def catch_all_redirect(path: str, request: Request) -> RedirectResponse:
-    table = get_db_table()
+def catch_all_redirect(path: str, request: Request, table: GetDBTable) -> RedirectResponse:
     response = table.get_item(Key={"ShortPath": path})
 
     if "Item" not in response:

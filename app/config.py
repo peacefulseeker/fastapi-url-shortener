@@ -38,6 +38,7 @@ class CorsSettings(SettingsMixin, BaseSettings):
 class DevelopmentSettings(BaseSettings):
     debug: bool = Field(default=False)
     loadtest: bool = Field(default=False)
+    loadtest_host: str = Field(default="")
     vite_origin: str = Field(default="http://localhost:5555")
 
 
@@ -47,7 +48,7 @@ class Settings(DatabaseSettings, CorsSettings, AuthSettings, DevelopmentSettings
     aws_cloudfront_domain: str = Field(default="")
     frontend_assets_version: str = Field(default="")
 
-    url_expiration_in_days: int = Field(default=30)
+    url_ttl: int = Field(default=60 * 60 * 24 * 30)  # 30 days
 
     @classmethod
     @lru_cache
