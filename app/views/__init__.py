@@ -1,10 +1,11 @@
 import starlette.status as status
-from fastapi import Request
+from fastapi import BackgroundTasks, Request
 from fastapi.responses import RedirectResponse
 from starlette.templating import _TemplateResponse
 
 from app.config import settings, templates
-from app.db import get_db_table
+from app.dependencies import GetDBTable
+from app.tasks import increment_url_visits
 
 
 def get_frontend_assets_url() -> str:
@@ -13,7 +14,7 @@ def get_frontend_assets_url() -> str:
     return "/static/frontend"
 
 
-async def home(request: Request) -> _TemplateResponse:
+def home(request: Request) -> _TemplateResponse:
     context: dict = {
         "origin": request.base_url,
     }
@@ -29,18 +30,13 @@ async def home(request: Request) -> _TemplateResponse:
     )
 
 
-async def catch_all_redirect(path: str, request: Request) -> RedirectResponse:
-    table = get_db_table()
+def catch_all_redirect(path: str, request: Request, table: GetDBTable, background_tasks: BackgroundTasks) -> RedirectResponse:
     response = table.get_item(Key={"ShortPath": path})
 
     if "Item" not in response:
         return RedirectResponse(request.url_for("home"), status_code=status.HTTP_304_NOT_MODIFIED)
 
-    table.update_item(
-        Key={"ShortPath": path},
-        UpdateExpression="ADD Visits :inc",
-        ExpressionAttributeValues={":inc": 1},
-    )
-
     full_url = str(response["Item"]["FullUrl"])
+    background_tasks.add_task(increment_url_visits, path, table)
+
     return RedirectResponse(full_url, status_code=status.HTTP_302_FOUND)

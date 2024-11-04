@@ -1,10 +1,14 @@
 import secrets
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
+if TYPE_CHECKING:  # pragma: no cover
+    from mypy_boto3_dynamodb.service_resource import Table
+
 from app.config import settings
+from app.db import get_db_table
 
 http_basic_auth = HTTPBasic()
 
@@ -20,3 +24,6 @@ def require_basic_auth(credentials: Annotated[HTTPBasicCredentials, Depends(http
             detail="Invalid credentials",
             headers={"WWW-Authenticate": "Basic"},
         )
+
+
+GetDBTable = Annotated["Table", Depends(get_db_table)]

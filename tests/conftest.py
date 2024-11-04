@@ -1,5 +1,6 @@
 import base64
-from typing import TYPE_CHECKING, Generator
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Any, Callable, Generator
 
 import boto3
 import pytest
@@ -8,15 +9,24 @@ from moto import mock_aws
 
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb import DynamoDBServiceResource
+    from mypy_boto3_dynamodb.service_resource import Table
 
 from tests.db import DDB
 
 from app.config import settings
+from app.db import get_db_table
 from app.main import app
+
+
+def get_db_table_override() -> Generator["Table", None, None]:
+    resource = next(get_ddb_resource())
+    yield resource.Table(settings.ddb_table_name)
 
 
 @pytest.fixture(scope="session")
 def client() -> TestClient:
+    app.dependency_overrides[get_db_table] = get_db_table_override
+
     return TestClient(app)
 
 
@@ -28,16 +38,14 @@ def client_with_basic_auth(client) -> TestClient:
     return client
 
 
+def get_ddb_resource():
+    with mock_aws():
+        yield boto3.resource("dynamodb", region_name=settings.aws_region_name)
+
+
 @pytest.fixture
 def ddb_resource() -> Generator["DynamoDBServiceResource", None, None]:
-    with mock_aws():
-        conn = boto3.resource("dynamodb", region_name=settings.aws_region_name)
-        yield conn
-
-
-@pytest.fixture(autouse=True)
-def get_ddb_resource(mocker, ddb_resource):
-    return mocker.patch("app.db.get_ddb_resource", return_value=ddb_resource)
+    yield from get_ddb_resource()
 
 
 @pytest.fixture()
@@ -53,3 +61,13 @@ def _settings():
     from app.config import settings
 
     return settings
+
+
+@contextmanager
+def mock_dependency(dependency: Callable, override: Any):
+    original_override = app.dependency_overrides[dependency]
+    app.dependency_overrides[dependency] = lambda: override
+    try:
+        yield
+    finally:
+        app.dependency_overrides[dependency] = original_override

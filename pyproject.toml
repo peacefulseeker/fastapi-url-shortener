@@ -23,6 +23,7 @@ toml-sort = "^0.23.1"
 
 [tool.poetry.group.dev.dependencies]
 bpython = "^0.24"
+locust = "^2.32.1"
 moto = {extras = ["dynamodb"], version = "^5.0.18"}
 mypy-boto3-dynamodb = "^1.35.24"
 pytest = "^8.3.3"

@@ -1,7 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import botocore
 import botocore.exceptions
@@ -9,8 +9,10 @@ from boto3.dynamodb.conditions import Key
 from fastapi import Form, HTTPException, status
 from pydantic import AliasGenerator, BaseModel, ConfigDict, alias_generators
 
+if TYPE_CHECKING:  # pragma: no cover
+    from mypy_boto3_dynamodb.service_resource import Table
+
 from app.config import settings
-from app.db import get_db_table
 
 
 class ShortenUrlForm(BaseModel):
@@ -22,7 +24,7 @@ class UrlItem(BaseModel):
     short_path: Optional[str]
     full_url: str
     created_at: str
-    expires_at: int = int((datetime.now() + timedelta(days=settings.url_expiration_in_days)).timestamp())
+    expires_at: int = int((datetime.now() + timedelta(seconds=settings.url_ttl)).timestamp())
 
     model_config = ConfigDict(
         alias_generator=AliasGenerator(serialization_alias=alias_generators.to_pascal),
@@ -39,13 +41,13 @@ class ExistingUrlItem(BaseModel):
 
 
 class UrlShortener:
-    def __init__(self, data: ShortenUrlForm) -> None:
-        self.table = get_db_table()
+    def __init__(self, data: ShortenUrlForm, table: "Table") -> None:
+        self.table = table
         self.data = data.model_copy()
         self.item: UrlItem | ExistingUrlItem = self._create_item()
 
     @staticmethod
-    def _generate_random_short_path(length: int = 8) -> str:
+    def generate_random_short_path(length: int = 8) -> str:
         chars = string.ascii_letters + string.digits
         return "".join(random.choices(chars, k=length))
 
@@ -68,7 +70,7 @@ class UrlShortener:
 
         while True:
             try:
-                self.data.short_path = self._generate_random_short_path()
+                self.data.short_path = self.generate_random_short_path()
                 item = self._construct_url_item()
                 self.table.put_item(
                     Item=item.model_dump(by_alias=True),
