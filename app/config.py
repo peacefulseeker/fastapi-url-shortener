@@ -51,6 +51,7 @@ class Settings(DatabaseSettings, CorsSettings, AuthSettings, DevelopmentSettings
     url_ttl: int = Field(default=60 * 60 * 24 * 30)  # 30 days
 
     sentry_dsn: str = Field(default="")
+    umami_website_id: str = Field(default="")
 
     @classmethod
     @lru_cache

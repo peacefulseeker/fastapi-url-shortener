@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if umami_website_id %}
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="{{ umami_website_id }}"></script>
+    {% endif %}
     {% if frontend_assets_url %}
     <script type="module" crossorigin src="{{ frontend_assets_url }}/index.js"></script>
     <link rel="stylesheet" crossorigin href="{{ frontend_assets_url }}/index.css">
@@ -11,7 +14,7 @@
     <script type="module" src="{{ vite_origin }}/src/main.ts"
         onerror="console.warn('Vite server should be running in order to serve frontend assets')"></script>
     {% endif %}
-    <title>URL Shortener</title>
+    <title>Shorten URLs effortlessly</title>
 </head>
 <body>
     <main>

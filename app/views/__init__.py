@@ -17,6 +17,7 @@ def get_frontend_assets_url() -> str:
 def home(request: Request) -> _TemplateResponse:
     context: dict = {
         "origin": request.base_url,
+        "umami_website_id": settings.umami_website_id,
     }
     if settings.debug:
         context["vite_origin"] = settings.vite_origin

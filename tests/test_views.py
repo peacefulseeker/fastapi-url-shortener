@@ -9,7 +9,7 @@ class TestHomePage:
     def test_success_default_url(self, client):
         response = client.get("/")
 
-        assert "URL Shortener" in response.text
+        assert "Shorten URLs effortlessly" in response.text
         assert str(response.context["origin"]) == "http://testserver/"
         assert response.context["frontend_assets_url"] == "/static/frontend"
 

@@ -5,12 +5,16 @@ import copy from "copy-to-clipboard";
 export class Form extends HTMLElement {
   private submitBtn: HTMLButtonElement;
   private form: HTMLFormElement;
+  private shortPathInput: HTMLInputElement;
+  private fullUrlInput: HTMLInputElement;
 
   constructor() {
     super();
 
     this.submitBtn = this.querySelector(".btn") as HTMLButtonElement;
     this.form = this.querySelector("form") as HTMLFormElement;
+    this.shortPathInput = this.querySelector("input[name='short_path']") as HTMLInputElement;
+    this.fullUrlInput = this.querySelector("input[name='full_url']") as HTMLInputElement;
   }
 
   onBeforeRequest = () => {
@@ -20,6 +24,10 @@ export class Form extends HTMLElement {
     setTimeout(() => {
       this.submitBtn.classList.remove("clicked");
     }, 200);
+    window.umami.track("url_shorten_requested", {
+      shortPath: this.shortPathInput.value,
+      fullUrl: this.fullUrlInput.value,
+    });
   };
 
   onAfterRequest = () => {
@@ -59,6 +67,9 @@ export class Form extends HTMLElement {
       toastMessage += ` succesfully!`;
     }
     toast.show(toastMessage, ToastLevel.SUCCESS, null);
+    window.umami.track("url_shortened", {
+      shortPath: this.shortPathInput.value,
+    });
   }
 }
 
