@@ -68,7 +68,7 @@ export class Form extends HTMLElement {
     }
     toast.show(toastMessage, ToastLevel.SUCCESS, null);
     window.umami.track("url_shortened", {
-      shortPath: this.shortPathInput.value,
+      shortPath: responseMessage.short_path,
     });
   }
 }
