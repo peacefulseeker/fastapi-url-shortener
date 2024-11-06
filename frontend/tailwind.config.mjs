@@ -2,7 +2,6 @@ import daisyui from "daisyui";
 
 export default {
   content: [
-    "./index.html",
     "../app/templates/**/*.html",
     "./src/**/*.{js,ts}",
   ],

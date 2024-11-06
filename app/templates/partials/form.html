@@ -10,15 +10,22 @@
             name="full_url"
             autofocus
             required pattern="https?://.*"
+            value="https://google.com"
             autocomplete="url"
             placeholder="Paste full URL"
             class="input input-bordered w-full mb-4" />
 
-        <label class="input input-bordered flex items-center gap-2 pl-0 w-full mb-4">
-            <span class="bg-neutral-100 flex items-center h-full px-2 rounded-l-md">{{ origin }}</span>
-            <input name="short_path" type="text" autocomplete placeholder="shortpath" class="grow"
-                maxlength="20" />
-        </label>
-        <button class="btn btn-primary w-full" type="submit">Shorten</button>
+            <label class="input input-bordered flex items-center gap-2 pl-0 w-full mb-4">
+                <span class="bg-neutral-100 flex items-center h-full px-2 rounded-l-md">{{ origin }}</span>
+                <input type="text"
+                    class="grow"
+                    name="short_path"
+                    autocomplete
+                    pattern="[a-zA-Z0-9\s\-_]+"
+                    placeholder="your-short-path"
+                    maxlength="24" />
+            </label>
+        <button class="btn btn-accent w-full" type="submit">Shorten</button>
+        <em class="text-sm mt-1">By default, all created short links will expire sometime in future</em>
     </form>
 </c-form>

@@ -96,7 +96,7 @@ class TestShortenUrl(TestMixin):
         result = self._shorten_url()
 
         assert result.status_code == status.HTTP_400_BAD_REQUEST
-        assert result.json() == {"detail": f"'{self.payload['short_path']}' path already exists, please use another one"}
+        assert result.json() == {"detail": f"'{self.payload['short_path']}' path is taken, please use another one"}
 
     def test_generate_random_path(self):
         result = UrlShortener.generate_random_short_path()

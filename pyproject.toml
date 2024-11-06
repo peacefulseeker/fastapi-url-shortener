@@ -20,6 +20,7 @@ python = "~3.11"
 python-multipart = "^0.0.12"
 sentry-sdk = {extras = ["fastapi"], version = "^2.18.0"}
 slowapi = "^0.1.9"
+stripe = "^11.2.0"
 toml-sort = "^0.23.1"
 
 [tool.poetry.group.dev.dependencies]

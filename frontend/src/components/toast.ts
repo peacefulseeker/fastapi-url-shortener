@@ -38,10 +38,10 @@ export class Toast extends HTMLElement {
   show(message: string, toastLevel: ToastLevel, lifeSpan: number | null = 3000) {
     this.clearAlert();
 
+    this.message.innerHTML = message.trim().replace("\n", "");
     this.level = toastLevel;
     this.alert.classList.add(`alert-${toastLevel}`);
     this.toast.classList.add("toast-visible");
-    this.message.innerHTML = message;
 
     if (lifeSpan) {
       this.ttl = setTimeout(() => {

@@ -19,6 +19,10 @@ class ShortenUrlForm(BaseModel):
     short_path: str = Form()
     full_url: str = Form()
 
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+    )
+
 
 class UrlItem(BaseModel):
     short_path: Optional[str]
@@ -93,7 +97,7 @@ class UrlShortener:
             if exc.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"'{self.data.short_path}' path already exists, please use another one",
+                    detail=f"'{self.data.short_path}' path is taken, please use another one",
                 )
 
             raise exc

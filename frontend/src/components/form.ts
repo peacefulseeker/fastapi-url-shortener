@@ -8,6 +8,8 @@ export class Form extends HTMLElement {
   private shortPathInput: HTMLInputElement;
   private fullUrlInput: HTMLInputElement;
 
+  public toast: Toast;
+
   constructor() {
     super();
 
@@ -15,6 +17,8 @@ export class Form extends HTMLElement {
     this.form = this.querySelector("form") as HTMLFormElement;
     this.shortPathInput = this.querySelector("input[name='short_path']") as HTMLInputElement;
     this.fullUrlInput = this.querySelector("input[name='full_url']") as HTMLInputElement;
+
+    this.toast = document.querySelector("c-toast") as Toast;
   }
 
   onBeforeRequest = () => {
@@ -25,8 +29,8 @@ export class Form extends HTMLElement {
       this.submitBtn.classList.remove("clicked");
     }, 200);
     window.umami.track("url_shorten_requested", {
-      shortPath: this.shortPathInput.value,
-      fullUrl: this.fullUrlInput.value,
+      shortPath: this.shortPathInput.value.trim(),
+      fullUrl: this.fullUrlInput.value.trim(),
     });
   };
 
@@ -36,7 +40,6 @@ export class Form extends HTMLElement {
 
   onBeforeSwap = (evt: CustomEvent) => {
     const status = evt.detail.xhr.status;
-    const toast = document.querySelector("c-toast") as Toast;
 
     let responseMessage;
     try {
@@ -46,29 +49,58 @@ export class Form extends HTMLElement {
     }
 
     if (responseMessage.shortened_url) {
-      this.processUrlShortened(responseMessage, toast);
+      this.processUrlShortened(responseMessage, status);
     } else if (status >= 400 && status < 500) {
-      toast.show(responseMessage, ToastLevel.WARNING);
+      this.toast.show(responseMessage, ToastLevel.WARNING);
     } else if (status >= 500) {
-      toast.show("Something went wrong, please try again later.", ToastLevel.ERROR);
+      this.toast.show("Something went wrong, please try again later.", ToastLevel.ERROR);
     }
   };
 
-  processUrlShortened(responseMessage: ShortenedUrlResponse, toast: Toast) {
-    const copied = copy(responseMessage.shortened_url);
-    let toastMessage = `Short URL <a class="break-all text-sm font-bold whitespace-pre-wrap" href="${responseMessage.shortened_url}" target="_blank">${responseMessage.shortened_url}</a> created`;
-    if (copied) {
-      toastMessage += ` and copied to clipboard!`;
-      if (responseMessage.expires_at) {
-        const expiresAt = new Date(responseMessage.expires_at * 1000).toLocaleString();
-        toastMessage += `<br />With expiration date set to ${expiresAt}`;
+  constructToastMessage(
+    responseMessage: ShortenedUrlResponse,
+    isCreated: boolean,
+    shouldPromote: boolean,
+  ) {
+    const isCopied = copy(responseMessage.shortened_url);
+    let toastMessage = `
+      <a class="break-all text-sm font-bold whitespace-pre-wrap" href="${responseMessage.shortened_url}" target="_blank" rel="nofollow">${responseMessage.shortened_url}</a> short link
+    `;
+    if (isCopied) {
+      if (isCreated) {
+        toastMessage += ` is created and copied to clipboard!`;
+      } else {
+        toastMessage += ` is copied to clipboard!`;
       }
     } else {
-      toastMessage += ` succesfully!`;
+      if (isCreated) {
+        toastMessage += ` is created!`;
+      } else {
+        toastMessage += ` is already created!`;
+      }
     }
-    toast.show(toastMessage, ToastLevel.SUCCESS, null);
+    if (responseMessage.expires_at) {
+      const expiresAt = new Date(responseMessage.expires_at * 1000).toLocaleString();
+      toastMessage += `<br/> Expires at ${expiresAt}`;
+    }
+    if (shouldPromote) {
+      toastMessage += `
+        </br> <a href="/donation/checkout?client_reference_id=${responseMessage.short_path}" class="cursor-pointer font-bold underline">⭐ Make it permanent</a>
+      `;
+    }
+    return toastMessage;
+  }
+
+  processUrlShortened(responseMessage: ShortenedUrlResponse, status: number) {
+    const isCreated = status === 201;
+    const shouldPromote =
+      isCreated && this.shortPathInput.value.trim() === responseMessage.short_path;
+    const toastMessage = this.constructToastMessage(responseMessage, isCreated, shouldPromote);
+    this.toast.show(toastMessage, ToastLevel.SUCCESS, null);
     window.umami.track("url_shortened", {
       shortPath: responseMessage.short_path,
+      isCreated,
+      shouldPromote,
     });
   }
 }

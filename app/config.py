@@ -42,7 +42,12 @@ class DevelopmentSettings(BaseSettings):
     vite_origin: str = Field(default="http://localhost:5555")
 
 
-class Settings(DatabaseSettings, CorsSettings, AuthSettings, DevelopmentSettings):
+class PaymentSettings(BaseSettings):
+    stripe_secret_key: str = Field(default="")
+    stripe_checkout_url: str = Field(default="")
+
+
+class Settings(DatabaseSettings, CorsSettings, AuthSettings, PaymentSettings, DevelopmentSettings):
     model_config = SettingsConfigDict(env_file="app/.env", env_file_encoding="utf-8")
 
     aws_cloudfront_domain: str = Field(default="")
