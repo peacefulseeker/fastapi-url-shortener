@@ -5,7 +5,8 @@ export enum ToastLevel {
   ERROR = "error",
 }
 
-export class Toast extends HTMLDivElement {
+export class Toast extends HTMLElement {
+  private toast: HTMLDivElement;
   private alert: HTMLDivElement;
   private close: HTMLSpanElement;
   private message: HTMLSpanElement;
@@ -15,6 +16,7 @@ export class Toast extends HTMLDivElement {
   constructor() {
     super();
 
+    this.toast = this.querySelector("#toast") as HTMLDivElement;
     this.alert = this.querySelector("#toast-alert") as HTMLDivElement;
     this.message = this.querySelector("#toast-message") as HTMLSpanElement;
     this.close = this.querySelector("#toast-close") as HTMLSpanElement;
@@ -27,7 +29,7 @@ export class Toast extends HTMLDivElement {
   }
 
   disconnectedCallback() {
-    this.close.removeEventListener("click", this.hide.bind(this));
+    this.close.removeEventListener("click", this.hide);
     document.removeEventListener("click", this.onOutsideClick.bind(this));
     document.removeEventListener("touchstart", this.onOutsideClick.bind(this));
   }
@@ -44,7 +46,7 @@ export class Toast extends HTMLDivElement {
     this.message.innerHTML = message.replace(/\s\s+/g, "");
     this.level = toastLevel;
     this.alert.classList.add(`alert-${toastLevel}`);
-    this.classList.add("toast-visible");
+    this.toast.classList.add("toast-visible");
 
     if (lifeSpan) {
       this.ttl = setTimeout(this.hide, lifeSpan);
@@ -56,9 +58,9 @@ export class Toast extends HTMLDivElement {
     this.alert.classList.remove(`alert-${this.level}`);
   }
 
-  hide() {
-    this.classList.remove("toast-visible");
-  }
+  hide = () => {
+    this.toast.classList.remove("toast-visible");
+  };
 }
 
-customElements.define("c-toast", Toast, { extends: "div" });
+customElements.define("c-toast", Toast);

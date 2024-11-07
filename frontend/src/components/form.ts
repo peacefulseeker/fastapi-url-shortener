@@ -2,7 +2,7 @@ import { Toast, ToastLevel } from "../components/toast";
 import { ShortenedUrlResponse } from "../types";
 import copy from "copy-to-clipboard";
 
-class Form extends HTMLFormElement {
+class Form extends HTMLElement {
   private submitBtn: HTMLButtonElement;
   private shortPathInput: HTMLInputElement;
   private fullUrlInput: HTMLInputElement;
@@ -16,7 +16,7 @@ class Form extends HTMLFormElement {
     this.shortPathInput = this.querySelector("input[name='short_path']") as HTMLInputElement;
     this.fullUrlInput = this.querySelector("input[name='full_url']") as HTMLInputElement;
 
-    this.toast = document.querySelector("#toast") as Toast;
+    this.toast = document.querySelector("c-toast") as Toast;
   }
 
   onBeforeRequest() {
@@ -88,4 +88,4 @@ class Form extends HTMLFormElement {
   }
 }
 
-customElements.define("c-form", Form, { extends: "form" });
+customElements.define("c-form", Form);
