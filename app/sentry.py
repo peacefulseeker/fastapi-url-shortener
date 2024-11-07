@@ -3,7 +3,7 @@ import sentry_sdk
 from app.config import settings
 
 
-def init_sentry():
+def init_sentry():  # pragma: no cover
     if not settings.sentry_dsn:
         return
 

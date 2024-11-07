@@ -47,6 +47,7 @@ env = [
     "BASIC_AUTH_PASSWORD = world",
     "BASIC_AUTH_USERNAME = hello",
     "DEBUG = False",
+    "STRIPE_CHECKOUT_URL = https://donate.stripe.com",
 ]
 
 [tool.ruff]
