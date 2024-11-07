@@ -27,10 +27,9 @@
 }
 
 form {
-    &.submitting {
+    &.htmx-request {
         pointer-events: none;
         opacity: 0.7;
-
 
         [type="submit"] {
             position: relative;
