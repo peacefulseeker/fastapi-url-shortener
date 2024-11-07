@@ -1,24 +1,27 @@
-<c-form>
-    <form class="flex flex-wrap items-center justify-center mx-auto pt-12 md:w-1/2"
+<form is="c-form"
+        class="flex flex-wrap items-center justify-center mx-auto pt-12 md:w-1/2"
         hx-post="/api/v1/urls/shorten"
         hx-swap="none"
-        hx-on::before-request="this.parentNode.onBeforeRequest()"
-        hx-on::after-request="this.parentNode.onAfterRequest()"
-        hx-on::before-swap="this.parentNode.onBeforeSwap(event)"
-        >
-        <input type="url"
-            name="full_url"
-            autofocus
-            required pattern="https?://.*"
-            autocomplete="url"
-            placeholder="Paste full URL"
-            class="input input-bordered w-full mb-4" />
+        hx-on::before-request="this.onBeforeRequest()"
+        hx-on::before-swap="this.onBeforeSwap(event)">
+    <input type="url"
+        name="full_url"
+        autofocus
+        required pattern="https?://.*"
+        autocomplete="url"
+        placeholder="Paste full URL"
+        class="input input-bordered w-full mb-4" />
 
         <label class="input input-bordered flex items-center gap-2 pl-0 w-full mb-4">
             <span class="bg-neutral-100 flex items-center h-full px-2 rounded-l-md">{{ origin }}</span>
-            <input name="short_path" type="text" autocomplete placeholder="shortpath" class="grow"
-                maxlength="20" />
+            <input type="text"
+                class="grow"
+                name="short_path"
+                autocomplete
+                pattern="[a-zA-Z0-9\s\-_]+"
+                placeholder="your-short-path"
+                maxlength="24" />
         </label>
-        <button class="btn btn-primary w-full" type="submit">Shorten</button>
-    </form>
-</c-form>
+    <button class="btn btn-accent w-full" type="submit">Shorten</button>
+    <em class="text-sm mt-1">By default, all created short links will expire sometime in future</em>
+</form>

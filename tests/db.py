@@ -10,9 +10,9 @@ class DDB:
     def __init__(self, ddb_resource: "DynamoDBServiceResource"):
         self.resource = ddb_resource
         self.table_name = settings.ddb_table_name
-        self.table: None | Table = None
+        self.table: "Table" = self.create_table()
 
-    def create_table(self) -> None:
+    def create_table(self) -> "Table":
         self.resource.create_table(
             TableName=self.table_name,
             KeySchema=[{"AttributeName": "ShortPath", "KeyType": "HASH"}],
@@ -30,9 +30,14 @@ class DDB:
                 }
             ],
         )
-        self.table = self.resource.Table(self.table_name)
+        return self.resource.Table(self.table_name)
 
     def delete_table(self):
-        if self.table:
-            self.table.delete()
-            self.table = None
+        self.table.delete()
+
+    def put_item(self, item: dict) -> None:
+        self.table.put_item(Item=item)
+
+    def get_item(self, key: dict) -> dict:
+        item = self.table.get_item(Key=key)
+        return item["Item"] if "Item" in item else {}

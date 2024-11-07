@@ -1,0 +1,23 @@
+{% extends "partials/base.html" %}
+
+{% block meta %}
+<title>Great! Your short link has been made permanent now!</title>
+{% endblock %}
+
+{% block content %}
+<div class="card bg-accent lg:w-1/3 mx-auto mt-10">
+    <div class="card-body">
+        <h2 class="card-title">Success!</h2>
+        <p>
+            Your short link <a href="{{ shortened_url }}" target="_blank" rel="nofollow" class="bg-white rounded px-1">{{shortened_url }}</a>
+            will live forever now!
+        </p>
+        <p>Payment ID for reference: <i>
+                <pre>{{ payment_id }}</pre>
+            </i></p>
+        <div class="card-actions justify-left">
+            <a class="btn mt-4" href="/">Back to home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

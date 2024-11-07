@@ -19,12 +19,16 @@ class ShortenUrlForm(BaseModel):
     short_path: str = Form()
     full_url: str = Form()
 
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+    )
+
 
 class UrlItem(BaseModel):
     short_path: Optional[str]
     full_url: str
     created_at: str
-    expires_at: int = int((datetime.now() + timedelta(seconds=settings.url_ttl)).timestamp())
+    expires_at: Optional[int] = int((datetime.now() + timedelta(seconds=settings.url_ttl)).timestamp())
 
     model_config = ConfigDict(
         alias_generator=AliasGenerator(serialization_alias=alias_generators.to_pascal),
@@ -33,7 +37,7 @@ class UrlItem(BaseModel):
 
 class ExistingUrlItem(BaseModel):
     short_path: str
-    expires_at: int
+    expires_at: Optional[int] = None
 
     model_config = ConfigDict(
         alias_generator=AliasGenerator(validation_alias=alias_generators.to_pascal),
@@ -63,6 +67,14 @@ class UrlShortener:
             return self._put_custom_url_item()
         return self._put_random_url_item()
 
+    def _construct_and_insert_item(self) -> UrlItem:
+        item = self._construct_url_item()
+        self.table.put_item(
+            Item=item.model_dump(by_alias=True),
+            ConditionExpression="attribute_not_exists(ShortPath)",
+        )
+        return item
+
     def _put_random_url_item(self) -> UrlItem | ExistingUrlItem:
         existing_item = self._find_existing_url()
         if existing_item:
@@ -71,33 +83,23 @@ class UrlShortener:
         while True:
             try:
                 self.data.short_path = self.generate_random_short_path()
-                item = self._construct_url_item()
-                self.table.put_item(
-                    Item=item.model_dump(by_alias=True),
-                    ConditionExpression="attribute_not_exists(ShortPath)",
-                )
-                return item
+                return self._construct_and_insert_item()
             except botocore.exceptions.ClientError as exc:
-                if exc.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
+                if self._item_exists_in_table(exc):
                     continue
                 raise exc
 
     def _put_custom_url_item(self) -> UrlItem:
         try:
-            item = self._construct_url_item()
-            self.table.put_item(
-                Item=item.model_dump(by_alias=True),
-                ConditionExpression="attribute_not_exists(ShortPath)",
-            )
+            return self._construct_and_insert_item()
         except botocore.exceptions.ClientError as exc:
-            if exc.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
+            if self._item_exists_in_table(exc):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"'{self.data.short_path}' path already exists, please use another one",
+                    detail=f"'{self.data.short_path}' path is taken, please use another one",
                 )
 
             raise exc
-        return item
 
     def _construct_url_item(self) -> UrlItem:
         return UrlItem(
@@ -105,3 +107,6 @@ class UrlShortener:
             full_url=self.data.full_url,
             created_at=datetime.now().isoformat(),
         )
+
+    def _item_exists_in_table(self, exc):
+        return exc.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException"

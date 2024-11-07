@@ -5,7 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from app.api.v1 import urls_api
 from app.config import settings
 from app.sentry import init_sentry
-from app.views import catch_all_redirect, home
+from app.views import catch_all_redirect, donation_views, home
 
 init_sentry()
 app = FastAPI(docs_url="/api/v1/docs", redoc_url=None)
@@ -19,4 +19,5 @@ app.add_middleware(
 )
 app.add_api_route("/", home, name="home")
 app.include_router(urls_api.router, prefix="/api/v1")
+app.include_router(donation_views.router)
 app.add_api_route("/{path:path}", catch_all_redirect, methods=["GET"])

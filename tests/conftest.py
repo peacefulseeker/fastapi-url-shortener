@@ -51,7 +51,6 @@ def ddb_resource() -> Generator["DynamoDBServiceResource", None, None]:
 @pytest.fixture()
 def ddb(ddb_resource):
     ddb = DDB(ddb_resource)
-    ddb.create_table()
     yield ddb
     ddb.delete_table()
 

@@ -3,31 +3,18 @@ from fastapi import BackgroundTasks, Request
 from fastapi.responses import RedirectResponse
 from starlette.templating import _TemplateResponse
 
-from app.config import settings, templates
+from app.config import templates
 from app.dependencies import GetDBTable
 from app.tasks import increment_url_visits
-
-
-def get_frontend_assets_url() -> str:
-    if settings.frontend_assets_version:
-        return f"https://{settings.aws_cloudfront_domain}/fus/v/{settings.frontend_assets_version}"
-    return "/static/frontend"
+from app.views.donation import DonationViews
+from app.views.utils import get_shared_template_context
 
 
 def home(request: Request) -> _TemplateResponse:
-    context: dict = {
-        "origin": request.base_url,
-        "umami_website_id": settings.umami_website_id,
-    }
-    if settings.debug:
-        context["vite_origin"] = settings.vite_origin
-    else:
-        context["frontend_assets_url"] = get_frontend_assets_url()
-
     return templates.TemplateResponse(
         request=request,
-        name="index.html",
-        context=context,
+        name="home.html",
+        context=get_shared_template_context(request),
     )
 
 
@@ -41,3 +28,6 @@ def catch_all_redirect(path: str, request: Request, table: GetDBTable, backgroun
     background_tasks.add_task(increment_url_visits, path, table)
 
     return RedirectResponse(full_url, status_code=status.HTTP_302_FOUND)
+
+
+donation_views = DonationViews()
