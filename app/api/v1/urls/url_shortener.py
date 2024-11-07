@@ -28,7 +28,7 @@ class UrlItem(BaseModel):
     short_path: Optional[str]
     full_url: str
     created_at: str
-    expires_at: int = int((datetime.now() + timedelta(seconds=settings.url_ttl)).timestamp())
+    expires_at: Optional[int] = int((datetime.now() + timedelta(seconds=settings.url_ttl)).timestamp())
 
     model_config = ConfigDict(
         alias_generator=AliasGenerator(serialization_alias=alias_generators.to_pascal),
@@ -37,7 +37,7 @@ class UrlItem(BaseModel):
 
 class ExistingUrlItem(BaseModel):
     short_path: str
-    expires_at: int
+    expires_at: Optional[int] = None
 
     model_config = ConfigDict(
         alias_generator=AliasGenerator(validation_alias=alias_generators.to_pascal),
