@@ -68,6 +68,30 @@ class TestListUrls(TestMixin):
         assert result.status_code == status.HTTP_200_OK
         assert result.json()["detail"]["count"] == 2
 
+    def test_get_item_auth_required(self):
+        result = self.client.get(self.url + "/go")
+
+        assert result.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_get_item_empty_dict(self, client_with_basic_auth):
+        result = client_with_basic_auth.get(self.url + "/go")
+
+        assert result.status_code == status.HTTP_200_OK
+        assert result.json() == {}
+
+    def test_get_item_returns_item(self, client_with_basic_auth):
+        self._shorten_url(
+            payload={
+                "short_path": "go",
+                "full_url": "https://google.com",
+            },
+        )
+
+        result = client_with_basic_auth.get(self.url + "/go")
+        assert result.status_code == status.HTTP_200_OK
+        assert result.json()["ShortPath"] == "go"
+        assert result.json()["FullUrl"] == "https://google.com"
+
 
 @pytest.mark.usefixtures("ddb")
 class TestShortenUrl(TestMixin):

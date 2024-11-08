@@ -24,17 +24,20 @@ def get_db_table_override() -> Generator["Table", None, None]:
 
 
 @pytest.fixture(scope="session")
-def client() -> TestClient:
+def _with_app_overrides():
     app.dependency_overrides[get_db_table] = get_db_table_override
 
+
+@pytest.fixture(scope="session")
+def client(_with_app_overrides) -> TestClient:
     return TestClient(app)
 
 
 @pytest.fixture(scope="session")
-def client_with_basic_auth(client) -> TestClient:
+def client_with_basic_auth(_with_app_overrides) -> TestClient:
+    client = TestClient(app)
     auth_string = base64.b64encode(f"{settings.basic_auth_username}:{settings.basic_auth_password}".encode()).decode()
-    headers = {"Authorization": f"Basic {auth_string}"}
-    client.headers.update(headers)
+    client.headers.update({"Authorization": f"Basic {auth_string}"})
     return client
 
 

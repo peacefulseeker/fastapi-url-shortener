@@ -17,6 +17,10 @@ class UrlsAPI:
     def router(self) -> APIRouter:
         api_router = APIRouter(prefix="/urls", tags=["urls"])
 
+        @api_router.get("/{short_path}", dependencies=[Depends(require_basic_auth)])
+        def get(short_path: str, table: GetDBTable) -> dict:
+            return table.get_item(Key={"ShortPath": short_path}).get("Item", {})
+
         @api_router.get("", dependencies=[Depends(require_basic_auth)])
         def list_all(table: GetDBTable) -> dict:
             response = table.scan()
