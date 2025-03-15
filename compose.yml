@@ -15,3 +15,6 @@ services:
       DYNAMO_ENDPOINT: "http://ddb:8000" # service_name:container_port
     depends_on:
       - ddb
+
+volumes:
+  dynamodb_data:

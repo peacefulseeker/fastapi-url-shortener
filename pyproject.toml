@@ -43,7 +43,7 @@ addopts = [
     "-p no:warnings",
 ]
 env = [
-    "AWS_REGION_NAME = eu-central-1",
+    "AWS_REGION = eu-central-1",
     "BASIC_AUTH_PASSWORD = world",
     "BASIC_AUTH_USERNAME = hello",
     "DEBUG = False",
