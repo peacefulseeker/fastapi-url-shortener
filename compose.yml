@@ -6,6 +6,8 @@ services:
     volumes:
       - ./dynamodb_data:/home/dynamodblocal/data
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data"
+    networks:
+      - url-shortener-net
 
   ddb-admin:
     image: aaronshaf/dynamodb-admin
@@ -15,6 +17,12 @@ services:
       DYNAMO_ENDPOINT: "http://ddb:8000" # service_name:container_port
     depends_on:
       - ddb
+    networks:
+      - url-shortener-net
 
 volumes:
   dynamodb_data:
+
+networks:
+  url-shortener-net:
+    name: url-shortener-network
