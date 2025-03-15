@@ -37,13 +37,13 @@ addopts = [
     "--verbosity=1",
     "-p no:warnings",
 ]
-env = [
-    "AWS_REGION = eu-central-1",
-    "BASIC_AUTH_PASSWORD = world",
-    "BASIC_AUTH_USERNAME = hello",
-    "DEBUG = False",
-    "STRIPE_CHECKOUT_URL = https://donate.stripe.com",
-]
+
+[tool.pytest_env]
+AWS_REGION = "eu-central-1"  # for moto to work properly
+BASIC_AUTH_PASSWORD = "world"
+BASIC_AUTH_USERNAME = "hello"
+DEBUG = 0
+STRIPE_CHECKOUT_URL = "https://donate.stripe.com"
 
 [tool.ruff]
 line-length = 160
