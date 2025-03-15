@@ -6,6 +6,25 @@ ifneq (,$(wildcard ./app/.env))
     export
 endif
 
+# production app builds for local testing
+IMAGE_NAME=urlshortener
+IMAGE_TAG=latest
+IMAGE_NETWORK=url-shortener-network
+
+docker-build:
+	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+
+docker-run:
+	docker run --network $(IMAGE_NETWORK) \
+		-e DDB_ENDPOINT_URL=http://ddb:8000 \
+		-p 8080:8080 \
+		$(IMAGE_NAME):$(IMAGE_TAG)
+
+docker-exec:
+	docker exec -it $$(docker ps -q --filter ancestor=$(IMAGE_NAME):$(IMAGE_TAG)) /bin/bash
+
+
+# development
 dev:
 	fastapi dev app/main.py --port 8000 --host 0.0.0.0
 
@@ -71,3 +90,4 @@ servefrontend:
 
 deployfrontend:
 	cd frontend && sh ./deploy_assets_version_to_s3.sh
+

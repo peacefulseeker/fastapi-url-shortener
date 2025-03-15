@@ -28,7 +28,7 @@ ruff = "^0.6.9"
 toml-sort = "^0.23.1"
 
 [tool.poetry.requires-plugins]
-poetry-plugin-export = ">=1.8"
+poetry-plugin-export = ">=1.9.0"
 
 [tool.pytest.ini_options]
 addopts = [
