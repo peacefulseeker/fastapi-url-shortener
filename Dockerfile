@@ -3,7 +3,10 @@ ARG PYTHON_VERSION=3.11-slim-bullseye
 from python:${PYTHON_VERSION} as poetry-deps-export
     WORKDIR /
 
-    RUN pip install poetry
+    RUN apt-get update && apt-get install -y libpq-dev gcc \
+        && rm -rf /var/lib/apt/lists/*
+
+    RUN pip install poetry==2.1.1
     COPY pyproject.toml poetry.lock /
     RUN poetry config virtualenvs.create false
     RUN poetry install --no-root --no-interaction
@@ -16,9 +19,7 @@ FROM python:${PYTHON_VERSION} as backend-build
 
     RUN useradd --user-group --system --no-log-init --create-home appuser
 
-    RUN apt-get update && apt-get install -y \
-        libpq-dev \
-        gcc \
+    RUN apt-get update && apt-get install -y libpq-dev gcc \
         && rm -rf /var/lib/apt/lists/*
 
     COPY --from=poetry-deps-export /requirements.txt /

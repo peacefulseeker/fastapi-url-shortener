@@ -1,14 +1,6 @@
-[build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core"]
-
 [tool.poetry]
-authors = ["Alexey Vorobyov <alexey.vorobyov.s@gmail.com>"]
-description = "URL Shortener"
 name = "fastapi-url-shortener"
 package-mode = false
-readme = "README.md"
-version = "0.2.0"
 
 [tool.poetry.dependencies]
 boto3 = {extras = ["dynamodb"], version = "^1.35.38"}
@@ -34,6 +26,9 @@ pytest-env = "^1.1.5"
 pytest-mock = "^3.14.0"
 ruff = "^0.6.9"
 toml-sort = "^0.23.1"
+
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
 
 [tool.pytest.ini_options]
 addopts = [
